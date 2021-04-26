@@ -87,7 +87,7 @@ resource "aws_apigatewayv2_integration" "websocket_connect" {
         "S": "$context.connectionId"
       },
       "user_id": {
-        "S": "$context.authorizer.sub"
+        "S": "$context?.authorizer?.sub"
       }
     },
     "TableName": "${aws_dynamodb_table.websocket_connections.name}"
