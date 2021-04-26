@@ -87,7 +87,8 @@ window.AppConfig = {
   "clientIdAuth": "${aws_cognito_user_pool_client.website_client.id}",
   "region": "${data.aws_region.current.name}",
   "identityPoolId": "${aws_cognito_identity_pool.user.id}",
-  "cognitoEndpoint": "${aws_cognito_user_pool.user.endpoint}"
+  "cognitoEndpoint": "${aws_cognito_user_pool.user.endpoint}",
+  "allowUnauthenticated": ${var.allow_unauthenticated}
 };
 EOF
 }
