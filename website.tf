@@ -109,7 +109,7 @@ resource "aws_s3_bucket_object" "website" {
   bucket = aws_s3_bucket.website.bucket
   key    = each.key
   source = "${var.website.source_dir}/${each.key}"
-  etag   = md5(file("${var.website.source_dir}/${each.key}"))
+  etag   = filemd5("${var.website.source_dir}/${each.key}")
 
   cache_control = "no-cache" # TODO
   content_type  = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9.]+)$", each.key).extension, null)
