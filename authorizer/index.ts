@@ -106,7 +106,7 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
     try {
         console.log(`user claim verify invoked for ${JSON.stringify(request)}`);
         const token = request.queryStringParameters.token;
-        if (!token) {
+        if (token == "anon") {
             if (allowUnauthenticated) {
                 return {
                     principalId: 'anon',
@@ -114,8 +114,6 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
                     context: null
                 }
             }
-
-            throw new Error('token is empty');
         }
 
         const tokenSections = token.split('.');
