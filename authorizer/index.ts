@@ -111,7 +111,7 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
                 return {
                     principalId: 'anon',
                     policyDocument: generatePolicy(request.methodArn, "Allow"),
-                    context: null
+                    context: {}
                 }
             }
         }
