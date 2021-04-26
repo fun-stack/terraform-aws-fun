@@ -199,11 +199,11 @@ resource "aws_apigatewayv2_stage" "websocket" {
   auto_deploy = true
 
   default_route_settings {
-    data_trace_enabled       = true
-    detailed_metrics_enabled = true
-    logging_level            = "INFO"
-    throttling_rate_limit    = 100
-    throttling_burst_limit   = 50
+    # data_trace_enabled       = true
+    # detailed_metrics_enabled = true
+    # logging_level            = "INFO"
+    throttling_rate_limit  = 100
+    throttling_burst_limit = 50
   }
 }
 
