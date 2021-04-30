@@ -20,3 +20,14 @@ resource "aws_dynamodb_table" "websocket_connections" {
     projection_type = "ALL"
   }
 }
+
+resource "aws_dynamodb_table" "websocket_commands" {
+  name         = "${local.prefix}-websocket-commands"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "sequence_number"
+
+  attribute {
+    name = "sequence_number"
+    type = "S"
+  }
+}
