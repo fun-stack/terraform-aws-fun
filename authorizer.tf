@@ -26,7 +26,7 @@ resource "aws_lambda_function" "authorizer" {
     variables = {
       COGNITO_POOL_ID       = aws_cognito_user_pool.user.id
       COGNITO_API_SCOPES    = join(" ", aws_cognito_resource_server.user.scope_identifiers)
-      ALLOW_UNAUTHENTICATED = var.allow_unauthenticated
+      ALLOW_UNAUTHENTICATED = local.api.allow_unauthenticated
     }
   }
 }

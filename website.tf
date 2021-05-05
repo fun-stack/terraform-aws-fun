@@ -47,11 +47,11 @@ resource "aws_cloudfront_distribution" "website" {
   enabled         = true
   is_ipv6_enabled = true
 
-  default_root_object = "index.html"
+  default_root_object = local.website.index_file
   custom_error_response {
     error_code         = 404
     response_code      = 404
-    response_page_path = "/error.html"
+    response_page_path = "/${local.website.error_file}"
   }
 
   aliases = [local.domain_website]
@@ -65,7 +65,7 @@ resource "aws_cloudfront_distribution" "website" {
   }
 
   default_cache_behavior {
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = aws_cloudfront_origin_access_identity.website.id
 
@@ -104,14 +104,14 @@ resource "aws_route53_record" "website" {
 }
 
 resource "aws_s3_bucket_object" "website" {
-  for_each = fileset(var.website.source_dir, "*")
+  for_each = fileset(local.website.source_dir, "*")
 
   bucket = aws_s3_bucket.website.bucket
   key    = each.key
-  source = "${var.website.source_dir}/${each.key}"
-  etag   = filemd5("${var.website.source_dir}/${each.key}")
+  source = "${local.website.source_dir}/${each.key}"
+  etag   = filemd5("${local.website.source_dir}/${each.key}")
 
-  cache_control = "no-cache" # TODO
+  cache_control = length(local.website.cache_files_regex) > 0 && length(regexall(local.website.cache_files_regex, each.key)) > 0 ? "max-age=${local.website.cache_files_max_age}" : "no-cache"
   content_type  = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9.]+)$", each.key).extension, null)
 }
 

@@ -1,6 +1,6 @@
 data "archive_file" "api" {
   type        = "zip"
-  source_dir  = var.api.source_dir
+  source_dir  = local.api.source_dir
   output_path = local.api_zip_file
 }
 
@@ -13,12 +13,12 @@ resource "aws_lambda_function" "api" {
   function_name = "${local.prefix}-api"
   role          = aws_iam_role.lambda_api.arn
 
-  timeout     = var.api.timeout
-  memory_size = var.api.memory_size
+  timeout     = local.api.timeout
+  memory_size = local.api.memory_size
   publish     = true
 
-  runtime          = var.api.runtime
-  handler          = var.api.handler
+  runtime          = local.api.runtime
+  handler          = local.api.handler
   filename         = local.api_zip_file
   source_code_hash = data.archive_file.api.output_base64sha256
 

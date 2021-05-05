@@ -12,7 +12,7 @@ variable "prod_workspace" {
 }
 variable "dev_workspaces" {
   type    = list(string)
-  default = ["dev"]
+  default = ["default"]
 }
 
 variable "dev_setup" {
@@ -23,11 +23,6 @@ variable "dev_setup" {
   default = null
 }
 
-variable "allow_unauthenticated" {
-  type    = bool
-  default = false
-}
-
 variable "auth" {
   type = object({
   })
@@ -35,21 +30,37 @@ variable "auth" {
 
 variable "website" {
   type = object({
-    source_dir = string
+    source_dir          = string
+    index_file          = optional(string)
+    error_file          = optional(string)
+    cache_files_regex   = optional(string)
+    cache_files_max_age = optional(number)
   })
 }
 
 variable "api" {
   type = object({
-    source_dir  = string
-    handler     = string
-    runtime     = string
-    timeout     = number
-    memory_size = number
+    source_dir            = string
+    handler               = string
+    runtime               = string
+    timeout               = number
+    memory_size           = number
+    allow_unauthenticated = optional(bool)
   })
 }
 
 locals {
+  website = defaults(var.website, {
+    index_file          = "index.html"
+    error_file          = "error.html"
+    cache_files_regex   = ""
+    cache_files_max_age = 31536000
+  })
+
+  api = defaults(var.api, {
+    allow_unauthenticated = false
+  })
+
   prefix = "${var.name}-${terraform.workspace}"
 
   is_dev = var.dev_setup != null && contains(var.dev_workspaces, terraform.workspace)
@@ -88,7 +99,7 @@ window.AppConfig = {
   "region": "${data.aws_region.current.name}",
   "identityPoolId": "${aws_cognito_identity_pool.user.id}",
   "cognitoEndpoint": "${aws_cognito_user_pool.user.endpoint}",
-  "allowUnauthenticated": ${var.allow_unauthenticated}
+  "allowUnauthenticated": ${var.api.allow_unauthenticated}
 };
 EOF
 }
