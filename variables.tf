@@ -4,7 +4,7 @@ variable "domain" {
 
 variable "prod_workspace" {
   type    = string
-  default = "prod"
+  default = "default"
 }
 variable "dev_workspaces" {
   type    = list(string)
