@@ -41,8 +41,6 @@ Create a new file `fun.tf`:
 module "fun" {
   source = "github.com/cornerman/fun-stack-tf"
 
-  name = "fun"
-
   domain = "<my-domain>" // there needs to exist a hosted zone with that domain name in your aws account
 
   website = {

@@ -1,7 +1,3 @@
-variable "name" {
-  type = string
-}
-
 variable "domain" {
   type = string
 }
@@ -50,6 +46,8 @@ variable "api" {
 }
 
 locals {
+  module_name = basename(abspath(path.module))
+
   website = defaults(var.website, {
     index_file          = "index.html"
     error_file          = "error.html"
@@ -61,7 +59,7 @@ locals {
     allow_unauthenticated = false
   })
 
-  prefix = "${var.name}-${terraform.workspace}"
+  prefix = "${local.module_name}-${terraform.workspace}"
 
   is_dev = var.dev_setup != null && contains(var.dev_workspaces, terraform.workspace)
 
