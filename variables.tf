@@ -2,7 +2,7 @@ variable "domain" {
   type = string
 }
 
-variable "email" {
+variable "catch_all_forward_to" {
   type    = string
   default = null
 }

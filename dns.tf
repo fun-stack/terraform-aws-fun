@@ -64,7 +64,7 @@ resource "aws_acm_certificate_validation" "ws" {
 }
 
 resource "aws_route53_record" "email_mx" {
-  count = var.email == null ? 0 : 1
+  count = var.catch_all_forward_to == null ? 0 : 1
 
   name = local.domain_website
   records = [
@@ -77,11 +77,11 @@ resource "aws_route53_record" "email_mx" {
 }
 
 resource "aws_route53_record" "email_txt" {
-  count = var.email == null ? 0 : 1
+  count = var.catch_all_forward_to == null ? 0 : 1
 
   name = local.domain_website
   records = [
-    "forward-email=${var.email}",
+    "forward-email=${var.catch_all_forward_to}",
     "v=spf1 a mx include:spf.forwardemail.net ~all",
   ]
   ttl     = 60
