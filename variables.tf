@@ -55,6 +55,7 @@ variable "budget" {
     limit_dollar = number
     notify_email = string
   })
+  default = null
 }
 
 locals {
