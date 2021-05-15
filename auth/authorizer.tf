@@ -5,12 +5,12 @@ data "archive_file" "authorizer" {
 }
 
 resource "aws_cloudwatch_log_group" "lambda_authorizer" {
-  name              = "/aws/lambda/${local.prefix}-authorizer"
+  name              = "/aws/lambda/${var.prefix}-authorizer"
   retention_in_days = 3
 }
 
 resource "aws_lambda_function" "authorizer" {
-  function_name = "${local.prefix}-authorizer"
+  function_name = "${var.prefix}-authorizer"
   role          = aws_iam_role.lambda_authorizer.arn
 
   timeout     = 30
@@ -26,13 +26,13 @@ resource "aws_lambda_function" "authorizer" {
     variables = {
       COGNITO_POOL_ID       = aws_cognito_user_pool.user.id
       COGNITO_API_SCOPES    = join(" ", aws_cognito_resource_server.user.scope_identifiers)
-      ALLOW_UNAUTHENTICATED = local.api.allow_unauthenticated
+      ALLOW_UNAUTHENTICATED = var.allow_unauthenticated
     }
   }
 }
 
 resource "aws_iam_role" "lambda_authorizer" {
-  name               = "${local.prefix}-lambda-authorizer"
+  name               = "${var.prefix}-lambda-authorizer"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",

@@ -1,7 +1,3 @@
-locals {
-  certificates = [aws_acm_certificate.website, aws_acm_certificate.auth, aws_acm_certificate.ws]
-}
-
 data "aws_route53_zone" "domain" {
   name = var.domain
 }
@@ -12,20 +8,9 @@ resource "aws_acm_certificate" "website" {
   provider          = aws.us
 }
 
-resource "aws_acm_certificate" "auth" {
-  domain_name       = local.domain_auth
-  validation_method = "DNS"
-  provider          = aws.us
-}
-
-resource "aws_acm_certificate" "ws" {
-  domain_name       = local.domain_ws
-  validation_method = "DNS"
-}
-
 resource "aws_route53_record" "certificate_validation" {
   for_each = {
-    for dvo in flatten([for c in local.certificates : c.domain_validation_options]) : dvo.domain_name => {
+    for dvo in aws_acm_certificate.website.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
       record = dvo.resource_record_value
       type   = dvo.resource_record_type
@@ -46,45 +31,4 @@ resource "aws_acm_certificate_validation" "website" {
     for dvo in aws_acm_certificate.website.domain_validation_options : aws_route53_record.certificate_validation[dvo.domain_name].fqdn
   ]
   provider = aws.us
-}
-
-resource "aws_acm_certificate_validation" "auth" {
-  certificate_arn = aws_acm_certificate.auth.arn
-  validation_record_fqdns = [
-    for dvo in aws_acm_certificate.auth.domain_validation_options : aws_route53_record.certificate_validation[dvo.domain_name].fqdn
-  ]
-  provider = aws.us
-}
-
-resource "aws_acm_certificate_validation" "ws" {
-  certificate_arn = aws_acm_certificate.ws.arn
-  validation_record_fqdns = [
-    for dvo in aws_acm_certificate.ws.domain_validation_options : aws_route53_record.certificate_validation[dvo.domain_name].fqdn
-  ]
-}
-
-resource "aws_route53_record" "email_mx" {
-  count = var.catch_all_forward_to == null ? 0 : 1
-
-  name = local.domain_website
-  records = [
-    "10 mx1.forwardemail.net",
-    "20 mx2.forwardemail.net",
-  ]
-  ttl     = 60
-  type    = "MX"
-  zone_id = data.aws_route53_zone.domain.zone_id
-}
-
-resource "aws_route53_record" "email_txt" {
-  count = var.catch_all_forward_to == null ? 0 : 1
-
-  name = local.domain_website
-  records = [
-    "forward-email=${var.catch_all_forward_to}",
-    "v=spf1 a mx include:spf.forwardemail.net ~all",
-  ]
-  ttl     = 60
-  type    = "TXT"
-  zone_id = data.aws_route53_zone.domain.zone_id
 }

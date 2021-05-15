@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool" "user" {
-  name = "${local.prefix}-user"
+  name = "${var.prefix}-user"
 
   #TODO
   username_attributes      = ["email"]
@@ -25,8 +25,8 @@ resource "aws_cognito_user_pool" "user" {
   }
 }
 resource "aws_cognito_resource_server" "user" {
-  name         = "${local.prefix}-user-ws"
-  identifier   = local.domain_ws
+  name         = "${var.prefix}-user-ws"
+  identifier   = "${var.prefix}-api"
   user_pool_id = aws_cognito_user_pool.user.id
 
   scope {
@@ -35,7 +35,7 @@ resource "aws_cognito_resource_server" "user" {
   }
 }
 resource "aws_cognito_user_pool_client" "website_client" {
-  name         = "${local.prefix}-website-client"
+  name         = "${var.prefix}-website-client"
   user_pool_id = aws_cognito_user_pool.user.id
 
   allowed_oauth_flows_user_pool_client = true
@@ -60,12 +60,12 @@ resource "aws_cognito_user_pool_client" "website_client" {
   supported_identity_providers = [
     "COGNITO",
   ]
-  logout_urls   = local.redirect_urls
-  callback_urls = local.redirect_urls
+  logout_urls   = var.redirect_urls
+  callback_urls = var.redirect_urls
 }
 
 resource "aws_cognito_identity_pool" "user" {
-  identity_pool_name = "${local.prefix}-user"
+  identity_pool_name = "${var.prefix}-user"
 
   allow_unauthenticated_identities = false
 
@@ -77,17 +77,16 @@ resource "aws_cognito_identity_pool" "user" {
 }
 
 resource "aws_cognito_user_pool_domain" "user" {
-  domain          = local.domain_auth
+  domain          = var.domain
   user_pool_id    = aws_cognito_user_pool.user.id
   certificate_arn = aws_acm_certificate.auth.arn
 
-  depends_on = [aws_route53_record.website]
 }
 
 resource "aws_route53_record" "cognito" {
   name    = aws_cognito_user_pool_domain.user.domain
   type    = "A"
-  zone_id = data.aws_route53_zone.domain.zone_id
+  zone_id = var.hosted_zone_id
   alias {
     evaluate_target_health = false
     name                   = aws_cognito_user_pool_domain.user.cloudfront_distribution_arn

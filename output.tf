@@ -1,3 +1,3 @@
 output "api_role" {
-  value = aws_iam_role.lambda_api
+  value = concat(module.api[*].api_role, [null])[0]
 }

@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "websocket_connections" {
-  name         = "${local.prefix}-websocket-connections"
+  name         = "${var.prefix}-websocket-connections"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "connection_id"
 
@@ -22,7 +22,7 @@ resource "aws_dynamodb_table" "websocket_connections" {
 }
 
 resource "aws_dynamodb_table" "websocket_commands" {
-  name         = "${local.prefix}-websocket-commands"
+  name         = "${var.prefix}-websocket-commands"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "sequence_number"
 

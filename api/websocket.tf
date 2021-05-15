@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "websocket" {
-  name                       = "${local.prefix}-websocket"
+  name                       = "${var.prefix}-websocket"
   protocol_type              = "WEBSOCKET"
   route_selection_expression = "$request.body.action"
 }
@@ -108,8 +108,8 @@ resource "aws_apigatewayv2_route_response" "websocket_ping" {
 resource "aws_apigatewayv2_route" "websocket_connect" {
   api_id             = aws_apigatewayv2_api.websocket.id
   route_key          = "$connect"
-  authorization_type = "CUSTOM"
-  authorizer_id      = aws_apigatewayv2_authorizer.websocket.id
+  authorization_type = length(aws_apigatewayv2_authorizer.websocket) > 0 ? "CUSTOM" : null
+  authorizer_id      = length(aws_apigatewayv2_authorizer.websocket) > 0 ? aws_apigatewayv2_authorizer.websocket[0].id : null
 
   target = "integrations/${aws_apigatewayv2_integration.websocket_connect.id}"
 }
@@ -189,7 +189,7 @@ resource "aws_apigatewayv2_route_response" "websocket_disconnect" {
 }
 
 resource "aws_iam_role" "websocket" {
-  name               = "${local.prefix}-websocket-api"
+  name               = "${var.prefix}-websocket-api"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -207,7 +207,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "websocket" {
-  role   = aws_iam_role.websocket.name
+  role = aws_iam_role.websocket.name
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -228,11 +228,13 @@ resource "aws_iam_role_policy" "websocket" {
             "Action": [
                 "lambda:InvokeFunction"
             ],
-            "Resource": [
-              "${aws_lambda_function.api.arn}",
-              "${aws_lambda_function.authorizer.arn}",
-              "${aws_lambda_function.authorizer.invoke_arn}"
-            ]
+            "Resource": ${jsonencode(concat(
+  [aws_lambda_function.api.arn],
+  var.auth_module == null ? [] : [
+    var.auth_module.authorizer_lambda.arn,
+    var.auth_module.authorizer_lambda.invoke_arn
+  ]
+))}
         }
     ]
 }
@@ -260,7 +262,7 @@ resource "aws_apigatewayv2_stage" "websocket" {
 }
 
 resource "aws_apigatewayv2_domain_name" "websocket" {
-  domain_name = local.domain_ws
+  domain_name = var.domain
 
   domain_name_configuration {
     certificate_arn = aws_acm_certificate.ws.arn
@@ -271,7 +273,7 @@ resource "aws_apigatewayv2_domain_name" "websocket" {
 resource "aws_route53_record" "websocket" {
   name    = aws_apigatewayv2_domain_name.websocket.domain_name
   type    = "A"
-  zone_id = data.aws_route53_zone.domain.zone_id
+  zone_id = var.hosted_zone_id
 
   alias {
     name                   = aws_apigatewayv2_domain_name.websocket.domain_name_configuration[0].target_domain_name
@@ -281,9 +283,11 @@ resource "aws_route53_record" "websocket" {
 }
 
 resource "aws_apigatewayv2_authorizer" "websocket" {
+  count = var.auth_module == null ? 0 : 1
+
   api_id                     = aws_apigatewayv2_api.websocket.id
   authorizer_type            = "REQUEST"
-  authorizer_uri             = aws_lambda_function.authorizer.invoke_arn
+  authorizer_uri             = var.auth_module.authorizer_lambda.invoke_arn
   authorizer_credentials_arn = aws_iam_role.websocket.arn
   identity_sources           = ["route.request.querystring.token"]
   name                       = "authorize-websocket"

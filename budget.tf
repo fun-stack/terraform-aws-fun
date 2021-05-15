@@ -8,6 +8,10 @@ resource "aws_budgets_budget" "budget" {
   time_unit         = "MONTHLY"
   time_period_start = "2021-01-01_00:00"
 
+  cost_filters = {
+    TagKeyValue = join("", ["user:funstack$", local.prefix])
+  }
+
   notification {
     comparison_operator        = "GREATER_THAN"
     threshold                  = 100
