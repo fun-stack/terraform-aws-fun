@@ -50,6 +50,13 @@ variable "api" {
   })
 }
 
+variable "budget" {
+  type = object({
+    limit_dollar = number
+    notify_email = string
+  })
+}
+
 locals {
   module_name = basename(abspath(path.module))
 
