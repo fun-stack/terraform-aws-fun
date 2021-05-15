@@ -62,3 +62,29 @@ resource "aws_acm_certificate_validation" "ws" {
     for dvo in aws_acm_certificate.ws.domain_validation_options : aws_route53_record.certificate_validation[dvo.domain_name].fqdn
   ]
 }
+
+resource "aws_route53_record" "email_mx" {
+  count = var.email == null ? 0 : 1
+
+  name = local.domain_website
+  records = [
+    "10 mx1.forwardemail.net",
+    "20 mx2.forwardemail.net",
+  ]
+  ttl     = 60
+  type    = "MX"
+  zone_id = data.aws_route53_zone.domain.zone_id
+}
+
+resource "aws_route53_record" "email_txt" {
+  count = var.email == null ? 0 : 1
+
+  name = local.domain_website
+  records = [
+    "forward-email=${var.email}",
+    "v=spf1 a mx include:spf.forwardemail.net ~all",
+  ]
+  ttl     = 60
+  type    = "TXT"
+  zone_id = data.aws_route53_zone.domain.zone_id
+}

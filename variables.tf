@@ -2,6 +2,11 @@ variable "domain" {
   type = string
 }
 
+variable "email" {
+  type    = string
+  default = null
+}
+
 variable "prod_workspace" {
   type    = string
   default = "default"
