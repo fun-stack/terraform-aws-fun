@@ -126,7 +126,6 @@ resource "aws_s3_bucket_object" "config_file" {
 }
 
 resource "local_file" "config_file" {
-  for_each = toset(local.is_dev ? ["0"] : [])
-  filename = "${var.dev_setup.config_output_dir}/app_config.js"
+  filename = "${path.module}/serve/app_config.js"
   content  = local.app_config_js
 }

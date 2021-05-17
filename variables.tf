@@ -24,7 +24,6 @@ variable "dev_workspaces" {
 variable "dev_setup" {
   type = object({
     local_website_url = string
-    config_output_dir = string
   })
   default = null
 }
