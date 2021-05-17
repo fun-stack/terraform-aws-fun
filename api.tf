@@ -1,5 +1,5 @@
 module "api" {
-  count  = var.api == null ? 0 : 1
+  count  = local.api == null ? 0 : 1
   source = "./api"
 
   prefix         = local.prefix

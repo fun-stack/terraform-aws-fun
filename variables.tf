@@ -79,9 +79,10 @@ locals {
     allow_unauthenticated = false
   })
 
-  prefix = "${local.module_name}-${terraform.workspace}"
+  auth = var.auth == null ? null : defaults(var.auth, {
+  })
 
-  api_allow_unauthenticated = local.api == null ? true : local.api.allow_unauthenticated
+  prefix = "${local.module_name}-${terraform.workspace}"
 
   is_dev = var.dev_setup != null && contains(var.dev_workspaces, terraform.workspace)
 
@@ -109,17 +110,25 @@ locals {
     pdf  = "application/pdf"
   }
 
-  app_config = <<EOF
-window.AppConfig = {
-  "environment": "${terraform.workspace}",
-  "domain": "${local.domain_website}",
-  "domainAuth": "${local.domain_auth}",
-  "domainWS": "${local.domain_ws}",
-  "region": "${data.aws_region.current.name}",
-  "clientIdAuth": "${concat(module.auth[*].user_pool_client.id, [""])[0]}",
-  "identityPoolId": "${concat(module.auth[*].identity_pool.id, [""])[0]}",
-  "cognitoEndpoint": "${concat(module.auth[*].user_pool.endpoint, [""])[0]}",
-  "allowUnauthenticated": ${local.api_allow_unauthenticated}
-};
+  app_config = {
+    environment = terraform.workspace,
+    region      = data.aws_region.current.name,
+    website = {
+      domain = local.domain_website
+    }
+    api = local.api == null ? null : {
+      domain               = local.domain_ws,
+      allowUnauthenticated = local.api.allow_unauthenticated
+    }
+    auth = local.auth == null ? null : {
+      domain          = local.domain_auth,
+      clientIdAuth    = module.auth[0].user_pool_client.id,
+      identityPoolId  = module.auth[0].identity_pool.id,
+      cognitoEndpoint = module.auth[0].user_pool.endpoint,
+    }
+  }
+
+  app_config_js = <<EOF
+window.AppConfig = ${jsonencode(local.app_config)};
 EOF
 }

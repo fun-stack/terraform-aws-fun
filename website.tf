@@ -119,7 +119,7 @@ resource "aws_s3_bucket_object" "website" {
 resource "aws_s3_bucket_object" "config_file" {
   bucket  = aws_s3_bucket.website.bucket
   key     = "app_config.js"
-  content = local.app_config
+  content = local.app_config_js
 
   cache_control = "no-cache"
   content_type  = "application/javascript"
@@ -128,5 +128,5 @@ resource "aws_s3_bucket_object" "config_file" {
 resource "local_file" "config_file" {
   for_each = toset(local.is_dev ? ["0"] : [])
   filename = "${var.dev_setup.config_output_dir}/app_config.js"
-  content  = local.app_config
+  content  = local.app_config_js
 }

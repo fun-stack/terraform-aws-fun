@@ -1,5 +1,5 @@
 module "auth" {
-  count  = var.auth == null ? 0 : 1
+  count  = local.auth == null ? 0 : 1
   source = "./auth"
 
   prefix         = local.prefix
@@ -7,7 +7,7 @@ module "auth" {
   hosted_zone_id = data.aws_route53_zone.domain.zone_id
 
   redirect_urls         = local.redirect_urls
-  allow_unauthenticated = local.api_allow_unauthenticated
+  allow_unauthenticated = local.api == null ? true : local.api.allow_unauthenticated
 
   providers = {
     aws    = aws
