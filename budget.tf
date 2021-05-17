@@ -3,7 +3,7 @@ resource "aws_budgets_budget" "budget" {
 
   name              = "${local.prefix}-budget-monthly"
   budget_type       = "COST"
-  limit_amount      = var.budget.limit_dollar
+  limit_amount      = var.budget.limit_monthly_dollar
   limit_unit        = "USD"
   time_unit         = "MONTHLY"
   time_period_start = "2021-01-01_00:00"

@@ -59,8 +59,8 @@ variable "api" {
 
 variable "budget" {
   type = object({
-    limit_dollar = number
-    notify_email = string
+    limit_monthly_dollar = string
+    notify_email         = string
   })
   default = null
 }
