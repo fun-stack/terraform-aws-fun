@@ -41,6 +41,7 @@ variable "website" {
     error_file          = optional(string)
     cache_files_regex   = optional(string)
     cache_files_max_age = optional(number)
+    environment         = optional(map(string))
   })
 }
 
@@ -73,6 +74,7 @@ locals {
     error_file          = "error.html"
     cache_files_regex   = ""
     cache_files_max_age = 31536000
+    environment         = {}
   })
 
   api = var.api == null ? null : defaults(var.api, {
@@ -112,8 +114,8 @@ locals {
   }
 
   app_config = {
-    environment = terraform.workspace,
-    region      = data.aws_region.current.name,
+    stage  = terraform.workspace,
+    region = data.aws_region.current.name,
     website = {
       domain = local.domain_website
     }
@@ -127,6 +129,7 @@ locals {
       identityPoolId  = module.auth[0].identity_pool.id,
       cognitoEndpoint = module.auth[0].user_pool.endpoint,
     }
+    environment = local.website.environment
   }
 
   app_config_js = <<EOF
