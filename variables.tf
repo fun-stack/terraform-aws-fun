@@ -34,6 +34,18 @@ variable "auth" {
   default = null
 }
 
+variable "payment" {
+  type = object({
+    stripe_api_token = string
+    product          = string
+    plans = list(object({
+      dollar   = number
+      interval = string # Options: day week month year
+    }))
+  })
+  default = null
+}
+
 variable "website" {
   type = object({
     source_dir          = string
@@ -96,6 +108,9 @@ locals {
   })
 
   auth = var.auth == null ? null : defaults(var.auth, {
+  })
+
+  payment = var.payment == null ? null : defaults(var.payment, {
   })
 
   prefix = "${local.module_name}-${terraform.workspace}"
