@@ -13,6 +13,8 @@ module "api" {
   runtime     = local.api.runtime
   handler     = local.api.handler
 
+  environment = local.api.environment
+
   providers = {
     aws    = aws
     aws.us = aws.us

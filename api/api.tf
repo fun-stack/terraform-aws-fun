@@ -22,7 +22,9 @@ resource "aws_lambda_function" "api" {
   filename         = local.api_zip_file
   source_code_hash = data.archive_file.api.output_base64sha256
 
-  # environment = {}
+  environment {
+    variables = var.environment
+  }
 }
 
 resource "aws_iam_role" "lambda_api" {

@@ -52,6 +52,7 @@ variable "api" {
     timeout               = number
     memory_size           = number
     allow_unauthenticated = optional(bool)
+    environment           = optional(map(string))
   })
   default = null
 }
@@ -76,6 +77,7 @@ locals {
 
   api = var.api == null ? null : defaults(var.api, {
     allow_unauthenticated = false
+    environment           = {}
   })
 
   auth = var.auth == null ? null : defaults(var.auth, {

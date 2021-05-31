@@ -34,6 +34,10 @@ variable "handler" {
   type = string
 }
 
+variable "environment" {
+  type = map(string)
+}
+
 locals {
   api_zip_file = "${path.module}/api.zip"
 }
