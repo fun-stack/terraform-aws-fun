@@ -58,6 +58,19 @@ variable "api" {
   default = null
 }
 
+variable "http" {
+  type = object({
+    source_dir        = string
+    handler           = string
+    runtime           = string
+    timeout           = number
+    memory_size       = number
+    swagger_yaml_file = string
+    environment       = optional(map(string))
+  })
+  default = null
+}
+
 variable "budget" {
   type = object({
     limit_monthly_dollar = string
@@ -74,12 +87,13 @@ locals {
     error_file          = "error.html"
     cache_files_regex   = ""
     cache_files_max_age = 31536000
-    environment         = {}
   })
 
   api = var.api == null ? null : defaults(var.api, {
     allow_unauthenticated = false
-    environment           = {}
+  })
+
+  http = var.http == null ? null : defaults(var.http, {
   })
 
   auth = var.auth == null ? null : defaults(var.auth, {
@@ -92,7 +106,8 @@ locals {
   domain         = terraform.workspace == var.prod_workspace ? var.domain : "${terraform.workspace}.env.${var.domain}"
   domain_website = local.domain
   domain_auth    = "auth.${local.domain}"
-  domain_ws      = "api.${local.domain}"
+  domain_ws      = "ws.${local.domain}"
+  domain_http    = "api.${local.domain}"
   redirect_urls = concat(
     ["https://${local.domain_website}"],
     local.is_dev ? [var.dev_setup.local_website_url] : []
@@ -129,7 +144,7 @@ locals {
       identityPoolId  = module.auth[0].identity_pool.id,
       cognitoEndpoint = module.auth[0].user_pool.endpoint,
     }
-    environment = local.website.environment
+    environment = local.website.environment == null ? {} : local.website.environment
   }
 
   app_config_js = <<EOF

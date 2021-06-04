@@ -22,8 +22,11 @@ resource "aws_lambda_function" "api" {
   filename         = local.api_zip_file
   source_code_hash = data.archive_file.api.output_base64sha256
 
-  environment {
-    variables = var.environment
+  dynamic "environment" {
+    for_each = var.environment == null || length(keys(var.environment)) == 0 ? [] : ["0"]
+    content {
+      variables = var.environment
+    }
   }
 }
 
