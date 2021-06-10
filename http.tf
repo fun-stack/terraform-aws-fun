@@ -15,8 +15,6 @@ module "http" {
 
   environment = local.http.environment
 
-  swagger_yaml_file = local.http.swagger_yaml_file
-
   providers = {
     aws    = aws
     aws.us = aws.us

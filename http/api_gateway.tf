@@ -1,12 +1,20 @@
 resource "aws_apigatewayv2_api" "httpapi" {
   name          = "${var.prefix}-httpapi"
   protocol_type = "HTTP"
-  body          = local.swagger_yaml_patched
 }
 
-resource "local_file" "swagger_yaml" {
-  filename = "${path.module}/swagger.yaml"
-  content  = local.swagger_yaml_patched
+resource "aws_apigatewayv2_route" "httpapi_default" {
+  api_id    = aws_apigatewayv2_api.httpapi.id
+  route_key = "$default"
+
+  target = "integrations/${aws_apigatewayv2_integration.httpapi_default.id}"
+}
+resource "aws_apigatewayv2_integration" "httpapi_default" {
+  api_id                 = aws_apigatewayv2_api.httpapi.id
+  integration_type       = "AWS_PROXY"
+  credentials_arn        = aws_iam_role.httpapi.arn
+  integration_uri        = aws_lambda_function.http.invoke_arn
+  payload_format_version = "2.0"
 }
 
 resource "aws_iam_role" "httpapi" {

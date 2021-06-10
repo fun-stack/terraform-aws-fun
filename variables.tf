@@ -60,13 +60,12 @@ variable "api" {
 
 variable "http" {
   type = object({
-    source_dir        = string
-    handler           = string
-    runtime           = string
-    timeout           = number
-    memory_size       = number
-    swagger_yaml_file = string
-    environment       = optional(map(string))
+    source_dir  = string
+    handler     = string
+    runtime     = string
+    timeout     = number
+    memory_size = number
+    environment = optional(map(string))
   })
   default = null
 }
