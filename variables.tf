@@ -36,14 +36,17 @@ variable "auth" {
 
 variable "payment" {
   type = object({
-    stripe_api_token = string
-    product          = string
+    stripe_api_token_private = string
+    stripe_api_token_public  = string
+    product                  = string
     plans = list(object({
       dollar   = number
-      interval = string # Options: day week month year
+      interval = string # day, week, month, year
+      currency = string # usd, eur, ...
     }))
   })
-  default = null
+  default   = null
+  sensitive = true # just because of api token?
 }
 
 variable "website" {
@@ -122,6 +125,7 @@ locals {
   domain_auth    = "auth.${local.domain}"
   domain_ws      = "ws.${local.domain}"
   domain_http    = "api.${local.domain}"
+  domain_payment = "payment.${local.domain}"
   redirect_urls = concat(
     ["https://${local.domain_website}"],
     local.is_dev ? [var.dev_setup.local_website_url] : []

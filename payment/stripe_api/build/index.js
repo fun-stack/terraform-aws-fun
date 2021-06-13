@@ -1,0 +1,1 @@
+var n=Object.defineProperty;var s=e=>n(e,"__esModule",{value:!0});var o=(e,t)=>{for(var r in t)n(e,r,{get:t[r],enumerable:!0})};s(exports);o(exports,{handler:()=>a});var a=async e=>(console.log("Request",e),{statusCode:200,body:"Hi"});0&&(module.exports={handler});
