@@ -45,8 +45,7 @@ variable "payment" {
       currency = string # usd, eur, ...
     }))
   })
-  default   = null
-  sensitive = true # just because of api token?
+  default = null
 }
 
 variable "website" {
@@ -153,14 +152,18 @@ locals {
       domain = local.domain_website
     }
     api = local.api == null ? null : {
-      domain               = local.domain_ws,
+      domain               = local.domain_ws
       allowUnauthenticated = local.api.allow_unauthenticated
     }
     auth = local.auth == null ? null : {
-      domain          = local.domain_auth,
-      clientIdAuth    = module.auth[0].user_pool_client.id,
-      identityPoolId  = module.auth[0].identity_pool.id,
-      cognitoEndpoint = module.auth[0].user_pool.endpoint,
+      domain          = local.domain_auth
+      clientIdAuth    = module.auth[0].user_pool_client.id
+      identityPoolId  = module.auth[0].identity_pool.id
+      cognitoEndpoint = module.auth[0].user_pool.endpoint
+    }
+    payment = local.payment == null ? null : {
+      domain       = local.domain_payment
+      clientIdAuth = module.auth[0].user_pool_client.id
     }
     environment = local.website.environment == null ? {} : local.website.environment
   }
