@@ -40,7 +40,7 @@ variable "payment" {
     stripe_api_token_public  = string
     product                  = string
     prices = map(object({
-      dollar   = number
+      amount   = number
       interval = string # day, week, month, year
       currency = string # usd, eur, ...
     }))

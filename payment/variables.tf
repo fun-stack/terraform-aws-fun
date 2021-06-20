@@ -30,7 +30,7 @@ variable "product" {
 
 variable "prices" {
   type = map(object({
-    dollar   = number
+    amount   = number
     interval = string # day, week, month, year
     currency = string # usd, eur, ...
   }))
