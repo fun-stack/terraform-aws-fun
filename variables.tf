@@ -115,7 +115,7 @@ locals {
   payment = var.payment == null ? null : defaults(var.payment, {
   })
 
-  prefix = "${local.module_name}-${terraform.workspace}"
+  prefix = "fun-${local.module_name}-${terraform.workspace}"
 
   is_dev = var.dev_setup != null && contains(var.dev_workspaces, terraform.workspace)
 

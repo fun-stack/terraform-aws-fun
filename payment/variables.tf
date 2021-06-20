@@ -38,5 +38,5 @@ variable "prices" {
 
 locals {
   module_name = basename(abspath(path.module))
-  prefix      = "${local.prefix}-${local.module_name}"
+  prefix      = "${var.prefix}-${local.module_name}"
 }
