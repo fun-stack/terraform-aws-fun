@@ -3,16 +3,20 @@ resource "stripe_product" "product" {
   type = "service"
 }
 
-resource "stripe_plan" "plan" {
-  for_each = var.plans
-  product  = stripe_product.product.id
-  amount   = each.value.amount
-  interval = each.value.interval
-  currency = each.value.currency
+resource "stripe_price" "price" {
+  for_each    = var.prices
+  product     = stripe_product.product.id
+  nickname    = each.key
+  currency    = each.value.currency
+  unit_amount = each.value.amount
+  recurring = {
+    interval       = each.value.interval
+    interval_count = 1
+  }
 }
 
 resource "stripe_webhook_endpoint" "endpoint" {
-  url = "https://mydomain.example.com/webhook"
+  url = "https://${var.domain}/webhook"
 
   enabled_events = [
     "charge.succeeded",

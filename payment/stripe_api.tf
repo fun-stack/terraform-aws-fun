@@ -6,7 +6,7 @@ module "http_stripe_api" {
   hosted_zone_id = var.hosted_zone_id
   auth_module    = var.auth_module
 
-  source_dir  = "${path.module}/stripe_api"
+  source_dir  = "${path.module}/stripe_api/build"
   timeout     = 30
   memory_size = 128
   runtime     = "nodejs14.x"

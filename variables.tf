@@ -39,7 +39,7 @@ variable "payment" {
     stripe_api_token_private = string
     stripe_api_token_public  = string
     product                  = string
-    plans = list(object({
+    prices = map(object({
       dollar   = number
       interval = string # day, week, month, year
       currency = string # usd, eur, ...
@@ -162,8 +162,8 @@ locals {
       cognitoEndpoint = module.auth[0].user_pool.endpoint
     }
     payment = local.payment == null ? null : {
-      domain       = local.domain_payment
-      clientIdAuth = module.auth[0].user_pool_client.id
+      domain         = local.domain_payment
+      publishableKey = local.payment.stripe_api_token_public
     }
     environment = local.website.environment == null ? {} : local.website.environment
   }

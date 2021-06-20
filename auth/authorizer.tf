@@ -1,6 +1,6 @@
 data "archive_file" "authorizer" {
   type        = "zip"
-  source_file = "${path.module}/authorizer/index.js"
+  source_file = "${path.module}/authorizer/build/"
   output_path = local.authorizer_zip_file
 }
 

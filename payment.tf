@@ -10,7 +10,7 @@ module "payment" {
   stripe_api_token_private = local.payment.stripe_api_token_private
   stripe_api_token_public  = local.payment.stripe_api_token_public
   product                  = local.payment.product
-  plans                    = local.payment.plans
+  prices                   = local.payment.prices
 
   providers = {
     aws    = aws

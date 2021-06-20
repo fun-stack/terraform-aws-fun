@@ -28,8 +28,8 @@ variable "product" {
   type = string
 }
 
-variable "plans" {
-  type = list(object({
+variable "prices" {
+  type = map(object({
     dollar   = number
     interval = string # day, week, month, year
     currency = string # usd, eur, ...
