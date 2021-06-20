@@ -19,5 +19,7 @@ variable "redirect_urls" {
 }
 
 locals {
+  module_name         = basename(abspath(path.module))
+  prefix              = "${local.prefix}-${local.module_name}"
   authorizer_zip_file = "${path.module}/authorizer.zip"
 }

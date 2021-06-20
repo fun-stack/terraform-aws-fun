@@ -1,7 +1,7 @@
 module "http_stripe_api" {
   source = "../http"
 
-  prefix         = var.prefix
+  prefix         = local.prefix
   domain         = var.domain
   hosted_zone_id = var.hosted_zone_id
   auth_module    = var.auth_module

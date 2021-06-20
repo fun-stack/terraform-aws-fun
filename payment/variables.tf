@@ -35,3 +35,8 @@ variable "prices" {
     currency = string # usd, eur, ...
   }))
 }
+
+locals {
+  module_name = basename(abspath(path.module))
+  prefix      = "${local.prefix}-${local.module_name}"
+}

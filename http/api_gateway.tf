@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "httpapi" {
-  name          = "${var.prefix}-httpapi"
+  name          = "${local.prefix}-httpapi"
   protocol_type = "HTTP"
 }
 
@@ -18,7 +18,7 @@ resource "aws_apigatewayv2_integration" "httpapi_default" {
 }
 
 resource "aws_iam_role" "httpapi" {
-  name               = "${var.prefix}-httpapi-api"
+  name               = "${local.prefix}-httpapi-api"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",

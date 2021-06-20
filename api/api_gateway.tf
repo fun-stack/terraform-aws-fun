@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "websocket" {
-  name                       = "${var.prefix}-websocket"
+  name                       = "${local.prefix}-websocket"
   protocol_type              = "WEBSOCKET"
   route_selection_expression = "$request.body.action"
 }
@@ -189,7 +189,7 @@ resource "aws_apigatewayv2_route_response" "websocket_disconnect" {
 }
 
 resource "aws_iam_role" "websocket" {
-  name               = "${var.prefix}-websocket-api"
+  name               = "${local.prefix}-websocket-api"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
