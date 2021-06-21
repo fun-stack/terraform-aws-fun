@@ -4,11 +4,12 @@ resource "stripe_product" "product" {
 }
 
 resource "stripe_price" "price" {
-  for_each    = var.prices
-  product     = stripe_product.product.id
-  nickname    = each.key
-  currency    = each.value.currency
-  unit_amount = each.value.amount
+  for_each       = var.prices
+  product        = stripe_product.product.id
+  billing_scheme = "per_unit"
+  nickname       = each.key
+  currency       = each.value.currency
+  unit_amount    = each.value.amount
   recurring = {
     interval       = each.value.interval
     interval_count = 1
