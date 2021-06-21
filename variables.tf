@@ -164,6 +164,7 @@ locals {
     payment = local.payment == null ? null : {
       domain         = local.domain_payment
       publishableKey = local.payment.stripe_api_token_public
+      priceIds       = module.payment[0].price_ids
     }
     environment = local.website.environment == null ? {} : local.website.environment
   }
