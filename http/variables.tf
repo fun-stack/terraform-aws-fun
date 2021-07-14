@@ -10,6 +10,10 @@ variable "domain" {
   type = string
 }
 
+variable "allow_origins" {
+  type = list(string)
+}
+
 variable "hosted_zone_id" {
   type = string
 }

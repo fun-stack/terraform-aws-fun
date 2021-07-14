@@ -3,6 +3,7 @@ module "http_stripe_api" {
 
   prefix         = local.prefix
   domain         = var.domain
+  allow_origins  = var.allow_origins
   hosted_zone_id = var.hosted_zone_id
   auth_module    = var.auth_module
 

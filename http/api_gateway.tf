@@ -1,6 +1,9 @@
 resource "aws_apigatewayv2_api" "httpapi" {
   name          = "${local.prefix}-httpapi"
   protocol_type = "HTTP"
+  cors_configuration {
+    allow_origins = var.allow_origins
+  }
 }
 
 resource "aws_apigatewayv2_route" "httpapi_default" {
