@@ -7,7 +7,7 @@ interface HttpRequest {
     readonly type?: string;
     readonly methodArn?: string;
     readonly body: string;
-    readonly requestContext: {http: {path: string}}
+    readonly requestContext: {http: {path: string, method: string}}
 }
 
 interface HttpResult {
@@ -27,6 +27,9 @@ async function handler(request: HttpRequest): Promise<HttpResult> {
         case "webhook":
             return stripeWebhook(request);
         case "create-session":
+            if (request.requestContext.http.method = "OPTIONS") {
+                return {statusCode: 200, body: ""};
+            }
             return stripeCreateSession(request);
         default:
             console.error("Unknown request", path);
