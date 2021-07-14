@@ -28,7 +28,7 @@ async function handler(request: HttpRequest): Promise<HttpResult> {
             return stripeWebhook(request);
         case "create-session":
             if (request.requestContext.http.method = "OPTIONS") {
-                return {statusCode: 200, body: "", headers: {Allow: "OPTIONS, GET"}};
+                return {statusCode: 200, body: "", headers: {Allow: "OPTIONS, GET", 'access-control-allow-origin': "*"}};
             }
             return stripeCreateSession(request);
         default:
