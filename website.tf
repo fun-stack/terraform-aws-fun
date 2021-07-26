@@ -54,7 +54,10 @@ resource "aws_cloudfront_distribution" "website" {
     response_page_path = "/${local.website.error_file}"
   }
 
-  aliases = [local.domain_website]
+  aliases = [
+    local.domain_website,
+    "www.${local.domain_website}"
+  ]
 
   #TODO
   price_class = "PriceClass_100"
@@ -78,6 +81,11 @@ resource "aws_cloudfront_distribution" "website" {
       }
     }
 
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.redirect_function.arn
+    }
+
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
@@ -94,8 +102,47 @@ resource "aws_cloudfront_distribution" "website" {
   wait_for_deployment = true
 }
 
+resource "aws_cloudfront_function" "redirect_function" {
+  name    = "${local.prefix}-redirect"
+  runtime = "cloudfront-js-1.0"
+  comment = "redirect all subdomains to ${local.domain_website}"
+  publish = true
+  code    = <<EOF
+function handler(event) {
+  var request = event.request;
+  var uri = request.uri;
+  var host = request.headers.host.value;
+  var newurl = "https://" + "${local.domain_website}" + uri;
+
+  if (host !== "${local.domain_website}") {
+    var response = {
+      statusCode: 302,
+      statusDescription: 'Found',
+      headers:
+        { "location": { "value": newurl } }
+    }
+
+    return response;
+  }
+
+  return request;
+}
+EOF
+}
+
 resource "aws_route53_record" "website" {
   name    = local.domain_website
+  type    = "A"
+  zone_id = data.aws_route53_zone.domain.zone_id
+  alias {
+    evaluate_target_health = false
+    name                   = aws_cloudfront_distribution.website.domain_name
+    zone_id                = aws_cloudfront_distribution.website.hosted_zone_id
+  }
+}
+
+resource "aws_route53_record" "website_www" {
+  name    = "www.${local.domain_website}"
   type    = "A"
   zone_id = data.aws_route53_zone.domain.zone_id
   alias {
