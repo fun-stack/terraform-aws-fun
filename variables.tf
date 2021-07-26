@@ -133,20 +133,32 @@ locals {
     website = {
       domain = local.domain_website
     }
-    api = local.api == null ? null : {
+    environment = local.website.environment == null ? {} : local.website.environment
+  }
+
+  app_config_api = local.api == null ? {} : {
+    api = {
       domain               = local.domain_ws
       allowUnauthenticated = local.api.allow_unauthenticated
     }
-    auth = local.auth == null ? null : {
+  }
+
+  app_config_http = local.http == null ? {} : {
+    http = {
+      domain = local.domain_http
+    }
+  }
+
+  app_config_auth = local.auth == null ? {} : {
+    auth = {
       domain          = local.domain_auth
       clientIdAuth    = module.auth[0].user_pool_client.id
       identityPoolId  = module.auth[0].identity_pool.id
       cognitoEndpoint = module.auth[0].user_pool.endpoint
     }
-    environment = local.website.environment == null ? {} : local.website.environment
   }
 
   app_config_js = <<EOF
-window.AppConfig = ${jsonencode(local.app_config)};
+window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_api, local.app_config_http, local.app_config_auth))};
 EOF
 }
