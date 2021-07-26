@@ -79,7 +79,7 @@ variable "budget" {
 }
 
 locals {
-  module_name = basename(abspath(path.module))
+  module_name = replace(basename(abspath(path.module)), "_", "-")
 
   website = var.website == null ? null : defaults(var.website, {
     index_file          = "index.html"
