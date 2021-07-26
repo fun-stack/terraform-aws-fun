@@ -3,13 +3,15 @@ resource "aws_apigatewayv2_api" "httpapi" {
   protocol_type = "HTTP"
   cors_configuration {
     allow_origins = var.allow_origins
-    allow_methods = ["GET", "POST", "PUT", "OPTIONS", "DELETE"]
+    allow_methods = ["GET", "POST", "PUT", "DELETE"]
+    allow_headers = ["authorization"]
   }
 }
 
 resource "aws_apigatewayv2_route" "httpapi_default" {
+  for_each  = toset(["GET", "POST", "PUT", "DELETE"])
   api_id    = aws_apigatewayv2_api.httpapi.id
-  route_key = "$default"
+  route_key = "${each.value} /{proxy+}"
 
   target = "integrations/${aws_apigatewayv2_integration.httpapi_default.id}"
 }
