@@ -11,6 +11,16 @@ resource "aws_acm_certificate" "website" {
   provider                  = aws.us
 }
 
+resource "aws_route53_record" "dns_caa" {
+  name    = local.domain_website
+  type    = "CAA"
+  zone_id = data.aws_route53_zone.domain.zone_id
+  ttl     = 60
+
+  records = ["0 issue \"amazonaws.com\""]
+}
+
+
 resource "aws_route53_record" "certificate_validation_website" {
   for_each = {
     for dvo in aws_acm_certificate.website.domain_validation_options : dvo.domain_name => {
