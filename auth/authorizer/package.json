@@ -11,6 +11,6 @@
     "typescript": "^4.2.4"
   },
   "scripts": {
-    "build": "tsc -noEmit index.ts && esbuild index.ts --minify --bundle --platform=node --outfile=index.js"
+    "build": "tsc -noEmit index.ts && esbuild index.ts --minify --bundle --platform=node --outfile=build/index.js"
   }
 }

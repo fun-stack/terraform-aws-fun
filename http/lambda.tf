@@ -5,12 +5,12 @@ data "archive_file" "http" {
 }
 
 resource "aws_cloudwatch_log_group" "lambda_http" {
-  name              = "/aws/lambda/${var.prefix}-http"
+  name              = "/aws/lambda/${local.prefix}-http"
   retention_in_days = 3
 }
 
 resource "aws_lambda_function" "http" {
-  function_name = "${var.prefix}-http"
+  function_name = "${local.prefix}-http"
   role          = aws_iam_role.lambda_http.arn
 
   timeout     = var.timeout
@@ -32,7 +32,7 @@ resource "aws_lambda_function" "http" {
 }
 
 resource "aws_iam_role" "lambda_http" {
-  name               = "${var.prefix}-lambda-http"
+  name               = "${local.prefix}-lambda-http"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",

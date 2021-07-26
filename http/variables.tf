@@ -10,6 +10,10 @@ variable "domain" {
   type = string
 }
 
+variable "allow_origins" {
+  type = list(string)
+}
+
 variable "hosted_zone_id" {
   type = string
 }
@@ -39,5 +43,7 @@ variable "environment" {
 }
 
 locals {
-  http_zip_file = "${path.module}/http.zip"
+  module_name   = basename(abspath(path.module))
+  prefix        = "${var.prefix}-${local.module_name}"
+  http_zip_file = "${path.module}/${local.prefix}-http.zip"
 }

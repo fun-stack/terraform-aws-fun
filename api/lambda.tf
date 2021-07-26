@@ -5,12 +5,12 @@ data "archive_file" "api" {
 }
 
 resource "aws_cloudwatch_log_group" "lambda_api" {
-  name              = "/aws/lambda/${var.prefix}-api"
+  name              = "/aws/lambda/${local.prefix}-api"
   retention_in_days = 3
 }
 
 resource "aws_lambda_function" "api" {
-  function_name = "${var.prefix}-api"
+  function_name = "${local.prefix}-api"
   role          = aws_iam_role.lambda_api.arn
 
   timeout     = var.timeout
@@ -31,7 +31,7 @@ resource "aws_lambda_function" "api" {
 }
 
 resource "aws_iam_role" "lambda_api" {
-  name               = "${var.prefix}-lambda-api"
+  name               = "${local.prefix}-lambda-api"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",

@@ -98,7 +98,7 @@ locals {
   auth = var.auth == null ? null : defaults(var.auth, {
   })
 
-  prefix = "${local.module_name}-${terraform.workspace}"
+  prefix = "fun-${local.module_name}-${terraform.workspace}"
 
   is_dev = var.dev_setup != null && contains(var.dev_workspaces, terraform.workspace)
 
@@ -134,14 +134,14 @@ locals {
       domain = local.domain_website
     }
     api = local.api == null ? null : {
-      domain               = local.domain_ws,
+      domain               = local.domain_ws
       allowUnauthenticated = local.api.allow_unauthenticated
     }
     auth = local.auth == null ? null : {
-      domain          = local.domain_auth,
-      clientIdAuth    = module.auth[0].user_pool_client.id,
-      identityPoolId  = module.auth[0].identity_pool.id,
-      cognitoEndpoint = module.auth[0].user_pool.endpoint,
+      domain          = local.domain_auth
+      clientIdAuth    = module.auth[0].user_pool_client.id
+      identityPoolId  = module.auth[0].identity_pool.id
+      cognitoEndpoint = module.auth[0].user_pool.endpoint
     }
     environment = local.website.environment == null ? {} : local.website.environment
   }
