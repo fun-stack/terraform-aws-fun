@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "website" {
-  bucket_prefix = "${local.prefix}-website"
+  bucket_prefix = "${substr(local.prefix, 0, 28)}-website"
   acl           = "private"
 }
 
