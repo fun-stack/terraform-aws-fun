@@ -13,6 +13,12 @@ Also see client-library for helpers in your language:
 
 ## What is it?
 
+## Requirements
+
+- yarn
+- node (>= 10.13.0)
+- terraform (>= 1.0.0)
+
 ## How to use?
 
 Make a new directory for your terraform module. In a file `terraform.tf`, you have something like this:
