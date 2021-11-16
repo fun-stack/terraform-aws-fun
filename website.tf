@@ -175,5 +175,5 @@ resource "aws_s3_bucket_object" "config_file" {
 
 resource "local_file" "config_file" {
   filename = "${path.module}/serve/app_config.js"
-  content  = local.app_config_js
+  content  = local.app_config_dev_js
 }

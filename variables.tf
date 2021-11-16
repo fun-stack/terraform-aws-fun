@@ -24,6 +24,8 @@ variable "dev_workspaces" {
 variable "dev_setup" {
   type = object({
     local_website_url = string
+    local_http_host   = optional(string)
+    local_ws_host     = optional(string)
   })
   default = null
 }
@@ -149,6 +151,19 @@ locals {
     }
   }
 
+  app_config_dev_api = local.api == null ? {} : {
+    api = {
+      domain               = local.is_dev && var.dev_setup.local_ws_host != null ? var.dev_setup.local_ws_host : local.domain_ws
+      allowUnauthenticated = local.api.allow_unauthenticated
+    }
+  }
+
+  app_config_dev_http = local.http == null ? {} : {
+    http = {
+      domain = local.is_dev && var.dev_setup.local_http_host != null ? var.dev_setup.local_http_host : local.domain_http
+    }
+  }
+
   app_config_auth = local.auth == null ? {} : {
     auth = {
       domain          = local.domain_auth
@@ -160,5 +175,9 @@ locals {
 
   app_config_js = <<EOF
 window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_api, local.app_config_http, local.app_config_auth))};
+EOF
+
+  app_config_dev_js = <<EOF
+window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_dev_api, local.app_config_dev_http, local.app_config_auth))};
 EOF
 }
