@@ -5,11 +5,10 @@ Create an opionated app environment on AWS. With website, auth, and reactive api
 This repository contains reusable terraform modules to build this app.
 
 See Examples for how to use it:
-- fun-stack-scala-example
-- fun-stack-js-example
+- Scala Project Template: [fun-stack.g8](https://github.com/fun-stack/fun-stack.g8)
 
 Also see client-library for helpers in your language:
-- fun-stack-scala
+- Scala Client Library: [fun-stack-scala](https://github.com/fun-stack/fun-stack-scala)
 
 ## What is it?
 
