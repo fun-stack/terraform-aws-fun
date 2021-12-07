@@ -5,7 +5,7 @@ module "http" {
   prefix         = local.prefix
   domain         = local.domain_http
   allow_origins  = local.redirect_urls
-  hosted_zone_id = data.aws_route53_zone.domain.zone_id
+  hosted_zone_id = concat(data.aws_route53_zone.domain.*.zone_id, [null])[0]
   auth_module    = concat(module.auth, [null])[0]
 
   source_dir  = local.http.source_dir

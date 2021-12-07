@@ -54,7 +54,7 @@ resource "aws_cloudfront_distribution" "website" {
     response_page_path = "/${local.website.error_file}"
   }
 
-  aliases = [
+  aliases = local.domain_website == null ? [] : [
     local.domain_website,
     "www.${local.domain_website}"
   ]
@@ -63,9 +63,10 @@ resource "aws_cloudfront_distribution" "website" {
   price_class = "PriceClass_100"
 
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate.website.arn
-    ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
+    acm_certificate_arn            = length(module.dns) > 0 ? module.dns[0].certificate_arn : null
+    ssl_support_method             = length(module.dns) > 0 ? "sni-only" : null
+    minimum_protocol_version       = length(module.dns) > 0 ? "TLSv1.2_2021" : null
+    cloudfront_default_certificate = length(module.dns) == 0
   }
 
   default_cache_behavior {
@@ -81,9 +82,12 @@ resource "aws_cloudfront_distribution" "website" {
       }
     }
 
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.redirect_function.arn
+    dynamic "function_association" {
+      for_each = aws_cloudfront_function.redirect_function.*.arn
+      content {
+        event_type   = "viewer-request"
+        function_arn = each.value
+      }
     }
 
     compress               = true
@@ -103,6 +107,7 @@ resource "aws_cloudfront_distribution" "website" {
 }
 
 resource "aws_cloudfront_function" "redirect_function" {
+  count   = local.domain_website == null ? 0 : 1
   name    = "${local.prefix}-redirect"
   runtime = "cloudfront-js-1.0"
   comment = "redirect all subdomains to ${local.domain_website}"
@@ -131,9 +136,10 @@ EOF
 }
 
 resource "aws_route53_record" "website" {
+  count   = local.domain_website == null ? 0 : 1
   name    = local.domain_website
   type    = "A"
-  zone_id = data.aws_route53_zone.domain.zone_id
+  zone_id = data.aws_route53_zone.domain[0].zone_id
   alias {
     evaluate_target_health = false
     name                   = aws_cloudfront_distribution.website.domain_name
@@ -142,9 +148,10 @@ resource "aws_route53_record" "website" {
 }
 
 resource "aws_route53_record" "website_www" {
+  count   = local.domain_website == null ? 0 : 1
   name    = "www.${local.domain_website}"
   type    = "A"
-  zone_id = data.aws_route53_zone.domain.zone_id
+  zone_id = data.aws_route53_zone.domain[0].zone_id
   alias {
     evaluate_target_health = false
     name                   = aws_cloudfront_distribution.website.domain_name

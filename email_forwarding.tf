@@ -1,5 +1,5 @@
 resource "aws_route53_record" "email_mx" {
-  count = var.catch_all_forward_to == null ? 0 : 1
+  count = var.catch_all_forward_to == null || var.domain == null ? 0 : 1
 
   name = local.domain_website
   records = [
@@ -8,11 +8,11 @@ resource "aws_route53_record" "email_mx" {
   ]
   ttl     = 60
   type    = "MX"
-  zone_id = data.aws_route53_zone.domain.zone_id
+  zone_id = data.aws_route53_zone.domain[0].zone_id
 }
 
 resource "aws_route53_record" "email_txt" {
-  count = var.catch_all_forward_to == null ? 0 : 1
+  count = var.catch_all_forward_to == null || var.domain == null ? 0 : 1
 
   name = local.domain_website
   records = [
@@ -21,5 +21,5 @@ resource "aws_route53_record" "email_txt" {
   ]
   ttl     = 60
   type    = "TXT"
-  zone_id = data.aws_route53_zone.domain.zone_id
+  zone_id = data.aws_route53_zone.domain[0].zone_id
 }

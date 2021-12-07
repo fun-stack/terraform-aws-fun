@@ -69,8 +69,9 @@ EOF
 }
 
 resource "aws_apigatewayv2_api_mapping" "httpapi" {
+  count       = var.domain == null ? 0 : 1
   api_id      = aws_apigatewayv2_api.httpapi.id
-  domain_name = aws_apigatewayv2_domain_name.httpapi.id
+  domain_name = aws_apigatewayv2_domain_name.httpapi[0].id
   stage       = aws_apigatewayv2_stage.httpapi.id
 }
 
@@ -89,22 +90,24 @@ resource "aws_apigatewayv2_stage" "httpapi" {
 }
 
 resource "aws_apigatewayv2_domain_name" "httpapi" {
+  count       = var.domain == null ? 0 : 1
   domain_name = var.domain
 
   domain_name_configuration {
-    certificate_arn = aws_acm_certificate.http.arn
+    certificate_arn = module.dns[0].certificate_arn
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
 }
 resource "aws_route53_record" "httpapi" {
-  name    = aws_apigatewayv2_domain_name.httpapi.domain_name
+  count   = var.domain == null ? 0 : 1
+  name    = aws_apigatewayv2_domain_name.httpapi[0].domain_name
   type    = "A"
   zone_id = var.hosted_zone_id
 
   alias {
-    name                   = aws_apigatewayv2_domain_name.httpapi.domain_name_configuration[0].target_domain_name
-    zone_id                = aws_apigatewayv2_domain_name.httpapi.domain_name_configuration[0].hosted_zone_id
+    name                   = aws_apigatewayv2_domain_name.httpapi[0].domain_name_configuration[0].target_domain_name
+    zone_id                = aws_apigatewayv2_domain_name.httpapi[0].domain_name_configuration[0].hosted_zone_id
     evaluate_target_health = false
   }
 }

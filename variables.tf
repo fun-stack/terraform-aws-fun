@@ -4,7 +4,8 @@ variable "region" {
 }
 
 variable "domain" {
-  type = string
+  type    = string
+  default = null
 }
 
 variable "catch_all_forward_to" {
@@ -104,13 +105,19 @@ locals {
 
   is_dev = var.dev_setup != null && contains(var.dev_workspaces, terraform.workspace)
 
-  domain         = terraform.workspace == var.prod_workspace ? var.domain : "${terraform.workspace}.env.${var.domain}"
+  domain         = terraform.workspace == var.prod_workspace || var.domain == null ? var.domain : "${terraform.workspace}.env.${var.domain}"
   domain_website = local.domain
-  domain_auth    = "auth.${local.domain}"
-  domain_ws      = "ws.${local.domain}"
-  domain_http    = "api.${local.domain}"
+  domain_auth    = local.domain == null ? null : "auth.${local.domain}"
+  domain_ws      = local.domain == null ? null : "ws.${local.domain}"
+  domain_http    = local.domain == null ? null : "api.${local.domain}"
+
+  domain_website_real = coalesce(local.domain, aws_cloudfront_distribution.website.domain_name, "none")
+  domain_auth_real    = length(module.auth) > 0 ? coalesce(local.domain_auth, module.auth[0].endpoint) : null
+  domain_ws_real      = length(module.api) > 0 ? coalesce(local.domain_ws, module.api[0].endpoint) : null
+  domain_http_real    = length(module.http) > 0 ? coalesce(local.domain_http, module.http[0].endpoint) : null
+
   redirect_urls = concat(
-    ["https://${local.domain_website}"],
+    ["https://${local.domain_website_real}"],
     local.is_dev ? [var.dev_setup.local_website_url] : []
   )
 
@@ -133,43 +140,41 @@ locals {
     stage  = terraform.workspace,
     region = data.aws_region.current.name,
     website = {
-      domain = local.domain_website
+      domain = local.domain_website_real
     }
     environment = local.website.environment == null ? {} : local.website.environment
   }
 
   app_config_api = local.api == null ? {} : {
     api = {
-      domain               = local.domain_ws
+      domain               = local.domain_ws_real
       allowUnauthenticated = local.api.allow_unauthenticated
     }
   }
 
   app_config_http = local.http == null ? {} : {
     http = {
-      domain = local.domain_http
+      domain = local.domain_http_real
     }
   }
 
   app_config_dev_api = local.api == null ? {} : {
     api = {
-      domain               = local.is_dev && var.dev_setup.local_ws_host != null ? var.dev_setup.local_ws_host : local.domain_ws
+      domain               = local.is_dev && var.dev_setup.local_ws_host != null ? var.dev_setup.local_ws_host : local.domain_ws_real
       allowUnauthenticated = local.api.allow_unauthenticated
     }
   }
 
   app_config_dev_http = local.http == null ? {} : {
     http = {
-      domain = local.is_dev && var.dev_setup.local_http_host != null ? var.dev_setup.local_http_host : local.domain_http
+      domain = local.is_dev && var.dev_setup.local_http_host != null ? var.dev_setup.local_http_host : local.domain_http_real
     }
   }
 
   app_config_auth = local.auth == null ? {} : {
     auth = {
-      domain          = local.domain_auth
-      clientIdAuth    = module.auth[0].user_pool_client.id
-      identityPoolId  = module.auth[0].identity_pool.id
-      cognitoEndpoint = module.auth[0].user_pool.endpoint
+      domain       = local.domain_auth_real
+      clientIdAuth = module.auth[0].user_pool_client.id
     }
   }
 

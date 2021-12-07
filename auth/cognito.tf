@@ -64,26 +64,20 @@ resource "aws_cognito_user_pool_client" "website_client" {
   callback_urls = var.redirect_urls
 }
 
-resource "aws_cognito_identity_pool" "user" {
-  identity_pool_name = "${local.prefix}-user"
-
-  allow_unauthenticated_identities = false
-
-  cognito_identity_providers {
-    client_id               = aws_cognito_user_pool_client.website_client.id
-    provider_name           = aws_cognito_user_pool.user.endpoint
-    server_side_token_check = false
-  }
+resource "random_pet" "domain_name" {
+  count = var.domain == null ? 1 : 0
+  separator = "-"
+  length = "3"
 }
 
 resource "aws_cognito_user_pool_domain" "user" {
-  domain          = var.domain
+  domain          = var.domain == null ? random_pet.domain_name[0].id : var.domain
   user_pool_id    = aws_cognito_user_pool.user.id
-  certificate_arn = aws_acm_certificate.auth.arn
-
+  certificate_arn = var.domain == null ? null : module.dns[0].certificate_arn
 }
 
 resource "aws_route53_record" "cognito" {
+  count   = var.domain == null ? 0 : 1
   name    = aws_cognito_user_pool_domain.user.domain
   type    = "A"
   zone_id = var.hosted_zone_id
