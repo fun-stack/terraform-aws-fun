@@ -111,7 +111,7 @@ locals {
   domain_ws      = local.domain == null ? null : "ws.${local.domain}"
   domain_http    = local.domain == null ? null : "api.${local.domain}"
 
-  domain_website_real = coalesce(local.domain, aws_cloudfront_distribution.website.domain_name, "none")
+  domain_website_real = coalesce(local.domain, aws_cloudfront_distribution.website.domain_name)
   domain_auth_real    = length(module.auth) > 0 ? coalesce(local.domain_auth, module.auth[0].endpoint) : null
   domain_ws_real      = length(module.api) > 0 ? coalesce(local.domain_ws, module.api[0].endpoint) : null
   domain_http_real    = length(module.http) > 0 ? coalesce(local.domain_http, module.http[0].endpoint) : null

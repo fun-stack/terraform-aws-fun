@@ -11,19 +11,19 @@ output "prefix" {
 }
 
 output "domain_website" {
-  value = local.domain_website
+  value = local.domain_website_real
 }
 
 output "domain_http" {
-  value = local.domain_http
+  value = local.domain_http_real
 }
 
 output "domain_ws" {
-  value = local.domain_ws
+  value = local.domain_ws_real
 }
 
 output "domain_auth" {
-  value = local.domain_auth
+  value = local.domain_auth_real
 }
 
 output "hosted_zone_id" {
