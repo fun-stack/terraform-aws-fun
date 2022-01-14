@@ -50,7 +50,7 @@ Create a new file `fun.tf`:
 ```tf
 module "fun" {
   source  = "fun-stack/fun/aws"
-  version = "0.1.1"
+  version = "0.1.2"
 
   domain = "<my-domain>" // there needs to exist a hosted zone with that domain name in your aws account
 
