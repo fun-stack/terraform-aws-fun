@@ -3,28 +3,33 @@ variable "region" {
   default = "eu-central-1"
 }
 
+variable "stage" {
+  description = "The stage name, that is dev, staging, prod, etc."
+  type        = string
+}
+
 variable "domain" {
-  type    = string
-  default = null
+  description = "Deploy under a custom domain. for this to work, you will need a hosted zone for this domain in your aws account."
+  type        = string
+  default     = null
+}
+
+variable "deploy_to_root_domain" {
+  description = "Deploy to the root domain. If true, deploys app to the root domain. If false, deploys app to <stage>.env.<domain>."
+  type        = bool
+  default     = true
 }
 
 variable "catch_all_forward_to" {
-  type    = string
-  default = null
-}
-
-variable "prod_workspace" {
-  type    = string
-  default = "default"
-}
-variable "dev_workspaces" {
-  type    = list(string)
-  default = ["default"]
+  ddescription = "Email address to which all @domain email should be forwarded."
+  type         = string
+  default      = null
 }
 
 variable "dev_setup" {
   type = object({
-    local_website_url = string
+    enabled           = optional(bool)
+    local_website_url = optional(string)
     local_http_host   = optional(string)
     local_ws_host     = optional(string)
   })
@@ -32,12 +37,14 @@ variable "dev_setup" {
 }
 
 variable "auth" {
+  description = "auth module with cognito"
   type = object({
   })
   default = null
 }
 
 variable "website" {
+  description = "website module with cloudfront and s3"
   type = object({
     source_dir          = string
     index_file          = optional(string)
@@ -49,6 +56,7 @@ variable "website" {
 }
 
 variable "api" {
+  description = "ws module with api gateway websockets"
   type = object({
     source_dir            = string
     handler               = string
@@ -62,6 +70,7 @@ variable "api" {
 }
 
 variable "http" {
+  description = "http module with api gateway http"
   type = object({
     source_dir  = string
     handler     = string
@@ -74,6 +83,7 @@ variable "http" {
 }
 
 variable "budget" {
+  description = "create a budget with email notification for this deployment"
   type = object({
     limit_monthly_dollar = string
     notify_email         = string
@@ -101,11 +111,11 @@ locals {
   auth = var.auth == null ? null : defaults(var.auth, {
   })
 
-  prefix = "fun-${local.module_name}-${terraform.workspace}"
+  prefix = "fun-${local.module_name}-${var.stage}"
 
-  is_dev = var.dev_setup != null && contains(var.dev_workspaces, terraform.workspace)
+  is_dev = var.dev_setup != null && var.dev_setup.enabled != false
 
-  domain         = terraform.workspace == var.prod_workspace || var.domain == null ? var.domain : "${terraform.workspace}.env.${var.domain}"
+  domain         = var.deploy_to_root_domain || var.domain == null ? var.domain : "${var.stage}.env.${var.domain}"
   domain_website = local.domain
   domain_auth    = local.domain == null ? null : "auth.${local.domain}"
   domain_ws      = local.domain == null ? null : "ws.${local.domain}"
@@ -118,11 +128,8 @@ locals {
 
   redirect_urls = concat(
     ["https://${local.domain_website_real}"],
-    local.is_dev ? [var.dev_setup.local_website_url] : []
+    local.is_dev && var.dev_setup.local_website_url != null ? [var.dev_setup.local_website_url] : []
   )
-
-  api_zip_file        = "${path.module}/api.zip"
-  authorizer_zip_file = "${path.module}/authorizer.zip"
 
   content_type_map = {
     html = "text/html",
@@ -137,7 +144,7 @@ locals {
   }
 
   app_config = {
-    stage  = terraform.workspace,
+    stage  = var.stage,
     region = data.aws_region.current.name,
     website = {
       domain = local.domain_website_real

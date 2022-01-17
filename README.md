@@ -54,6 +54,8 @@ module "fun" {
 
   domain = "<my-domain>" // there needs to exist a hosted zone with that domain name in your aws account
 
+  environment = "dev"
+
   website = {
     source_dir = "<directory from where to copy website files>"
   }
@@ -81,7 +83,7 @@ Go to `<my-domain>` in your browser.
 
 ## Stages
 
-You can have multiple environments, like dev,staging,prod. Just change the terraform workspace. These environents are available online at `<workspace>.env.<my-domain>`.
+You can have multiple environments, like dev,staging,prod. Just set `environment = "<dev|staging|prod>"`. These environents are available online at `<environment>.env.<my-domain>`.
 
 ## Modules
 
