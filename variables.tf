@@ -113,7 +113,7 @@ locals {
 
   prefix = "fun-${local.module_name}-${var.stage}"
 
-  is_dev = var.dev_setup != null && var.dev_setup.enabled != false
+  is_dev = var.dev_setup != null && lookup(var.dev_setup == null ? {} : var.dev_setup, "enabled", null) != false
 
   domain         = var.deploy_to_root_domain || var.domain == null ? var.domain : "${var.stage}.env.${var.domain}"
   domain_website = local.domain
@@ -128,7 +128,7 @@ locals {
 
   redirect_urls = concat(
     ["https://${local.domain_website_real}"],
-    local.is_dev && var.dev_setup.local_website_url != null ? [var.dev_setup.local_website_url] : []
+    local.is_dev && lookup(var.dev_setup == null ? {} : var.dev_setup, "local_website_url", null) != null ? [var.dev_setup.local_website_url] : []
   )
 
   content_type_map = {
