@@ -21,9 +21,9 @@ variable "deploy_to_root_domain" {
 }
 
 variable "catch_all_forward_to" {
-  ddescription = "Email address to which all @domain email should be forwarded."
-  type         = string
-  default      = null
+  description = "Email address to which all @domain email should be forwarded."
+  type        = string
+  default     = null
 }
 
 variable "dev_setup" {
