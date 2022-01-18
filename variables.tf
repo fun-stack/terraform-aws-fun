@@ -47,6 +47,7 @@ variable "website" {
   description = "website module with cloudfront and s3"
   type = object({
     source_dir          = string
+    source_bucket       = optional(string)
     index_file          = optional(string)
     error_file          = optional(string)
     cache_files_regex   = optional(string)

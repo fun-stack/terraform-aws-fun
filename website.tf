@@ -159,8 +159,26 @@ resource "aws_route53_record" "website_www" {
   }
 }
 
+data "aws_s3_bucket_objects" "website" {
+  count = local.website.source_bucket != null ? 1 : 0
+
+  bucket = local.website.source_bucket
+  prefix = local.website.source_dir
+}
+
+resource "aws_s3_object_copy" "website" {
+  for_each = flatten(data.aws_s3_bucket_objects.website.*.keys)
+
+  bucket = aws_s3_bucket.website.bucket
+  key    = each.key
+  source = "${local.website.source_bucket}/${each.key}"
+
+  cache_control = length(local.website.cache_files_regex) > 0 && length(regexall(local.website.cache_files_regex, each.key)) > 0 ? "max-age=${local.website.cache_files_max_age}" : "no-cache"
+  content_type  = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9.]+)$", each.key).extension, null)
+}
+
 resource "aws_s3_bucket_object" "website" {
-  for_each = fileset(local.website.source_dir, "*")
+  for_each = local.website.source_bucket == null ? fileset(local.website.source_dir, "*") : []
 
   bucket = aws_s3_bucket.website.bucket
   key    = each.key
