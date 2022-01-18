@@ -27,5 +27,5 @@ output "url_auth" {
 }
 
 output "hosted_zone_id" {
-  value = concat(data.aws_route53_zone.domain.*.zone_id, [null])[0]
+  value = concat(data.aws_route53_zone.domain[*].zone_id, [null])[0]
 }

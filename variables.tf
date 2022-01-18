@@ -97,6 +97,14 @@ variable "budget" {
 locals {
   module_name = replace(basename(abspath(path.module)), "_", "-")
 
+  # dev_setup = defaults(var.dev_setup == null ? {} : var.dev_setup, {
+  #   enabled = true
+  # })
+  dev_setup_defaults = {
+    enabled = true
+  }
+  dev_setup = var.dev_setup == null ? local.dev_setup_defaults : defaults(var.dev_setup, local.dev_setup_defaults)
+
   website = var.website == null ? null : defaults(var.website, {
     index_file          = "index.html"
     error_file          = "error.html"
@@ -116,8 +124,6 @@ locals {
 
   prefix = "fun-${local.module_name}-${var.stage}"
 
-  is_dev = var.dev_setup != null && lookup(var.dev_setup == null ? {} : var.dev_setup, "enabled", null) != false
-
   domain         = var.deploy_to_root_domain || var.domain == null ? var.domain : "${var.stage}.env.${var.domain}"
   domain_website = local.domain
   domain_auth    = local.domain == null ? null : "auth.${local.domain}"
@@ -127,11 +133,11 @@ locals {
   url_website = coalesce(local.domain, "https://${aws_cloudfront_distribution.website.domain_name}")
   url_auth    = length(module.auth) > 0 ? coalesce(local.domain_auth == null ? null : "https://${local.domain_auth}", module.auth[0].url) : null
   url_ws      = length(module.ws) > 0 ? coalesce(local.domain_ws == null ? null : "wss://${local.domain_ws}", module.ws[0].url) : null
-  url_http    = length(module.http) > 0 ? coalesce(local.domain_http == null ? null : "https://${local.domain_http}", module.http[0].url) : null
+  url_http    = length(module.http) > 0 ? coalesce(local.domain_http ? null : "https://${local.domain_http}", module.http[0].url) : null
 
   redirect_urls = concat(
     ["https://${local.url_website}"],
-    local.is_dev && lookup(var.dev_setup == null ? {} : var.dev_setup, "local_website_url", null) != null ? [var.dev_setup.local_website_url] : []
+    local.dev_setup.enabled && local.dev_setup.local_website_url != null ? [local.dev_setup.local_website_url] : []
   )
 
   content_type_map = {
@@ -170,14 +176,14 @@ locals {
 
   app_config_dev_ws = local.ws == null ? {} : {
     ws = {
-      url                  = local.is_dev && var.dev_setup.local_ws_url != null ? var.dev_setup.local_ws_url : local.url_ws
+      url                  = local.dev_setup.enabled && local.dev_setup.local_ws_url != null ? local.dev_setup.local_ws_url : local.url_ws
       allowUnauthenticated = local.ws.allow_unauthenticated
     }
   }
 
   app_config_dev_http = local.http == null ? {} : {
     http = {
-      url = local.is_dev && var.dev_setup.local_http_url != null ? var.dev_setup.local_http_url : local.url_http
+      url = local.dev_setup.enabled && local.dev_setup.local_http_url != null ? local.dev_setup.local_http_url : local.url_http
     }
   }
 

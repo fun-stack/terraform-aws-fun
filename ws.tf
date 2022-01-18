@@ -4,7 +4,7 @@ module "ws" {
 
   prefix         = local.prefix
   domain         = local.domain_ws
-  hosted_zone_id = concat(data.aws_route53_zone.domain.*.zone_id, [null])[0]
+  hosted_zone_id = concat(data.aws_route53_zone.domain[*].zone_id, [null])[0]
   auth_module    = concat(module.auth, [null])[0]
 
   source_dir    = local.ws.source_dir
