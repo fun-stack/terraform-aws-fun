@@ -1,5 +1,5 @@
-output "api_role" {
-  value = aws_iam_role.lambda_api
+output "ws_role" {
+  value = aws_iam_role.lambda_ws
 }
 
 output "endpoint" {

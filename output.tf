@@ -1,5 +1,5 @@
-output "api_role" {
-  value = concat(module.api[*].api_role, [null])[0]
+output "ws_role" {
+  value = concat(module.ws[*].ws_role, [null])[0]
 }
 
 output "http_role" {

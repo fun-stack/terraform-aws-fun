@@ -14,7 +14,7 @@ resource "aws_apigatewayv2_integration" "websocket_default" {
   api_id           = aws_apigatewayv2_api.websocket.id
   integration_type = "AWS_PROXY"
   credentials_arn  = aws_iam_role.websocket.arn
-  integration_uri  = aws_lambda_function.api.invoke_arn
+  integration_uri  = aws_lambda_function.ws.invoke_arn
   # content_handling_strategy = "CONVERT_TO_BINARY"
 }
 resource "aws_apigatewayv2_integration_response" "websocket_default" {
@@ -25,83 +25,6 @@ resource "aws_apigatewayv2_integration_response" "websocket_default" {
 resource "aws_apigatewayv2_route_response" "websocket_default" {
   api_id             = aws_apigatewayv2_api.websocket.id
   route_id           = aws_apigatewayv2_route.websocket_default.id
-  route_response_key = "$default"
-}
-
-resource "aws_apigatewayv2_route" "websocket_commands" {
-  api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "command"
-
-  target = "integrations/${aws_apigatewayv2_integration.websocket_commands.id}"
-}
-resource "aws_apigatewayv2_integration" "websocket_commands" {
-  api_id             = aws_apigatewayv2_api.websocket.id
-  integration_type   = "AWS"
-  integration_method = "POST"
-  integration_uri    = "arn:aws:apigateway:${data.aws_region.current.name}:dynamodb:action/PutItem"
-  credentials_arn    = aws_iam_role.websocket.arn
-
-  request_templates = {
-    "application/json" = <<EOF
-{
-    "Item": {
-      "sequence_number": {
-        "S": "$context.requestTimeEpoch $context.connectionId $context.requestId"
-      },
-      "user_id": {
-        #if("$context.authorizer.sub" == "")
-        "S": "anon"
-        #else
-        "S": "$context.authorizer.sub"
-        #end
-      },
-      "payload": {
-        "S": "$input.path('$')"
-      }
-    },
-    "TableName": "${aws_dynamodb_table.websocket_commands.name}"
-}
-EOF
-  }
-}
-resource "aws_apigatewayv2_integration_response" "websocket_commands" {
-  api_id                   = aws_apigatewayv2_api.websocket.id
-  integration_id           = aws_apigatewayv2_integration.websocket_commands.id
-  integration_response_key = "/200/"
-}
-resource "aws_apigatewayv2_route_response" "websocket_commands" {
-  api_id             = aws_apigatewayv2_api.websocket.id
-  route_id           = aws_apigatewayv2_route.websocket_commands.id
-  route_response_key = "$default"
-}
-
-resource "aws_apigatewayv2_route" "websocket_ping" {
-  api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "ping"
-
-  target = "integrations/${aws_apigatewayv2_integration.websocket_ping.id}"
-}
-resource "aws_apigatewayv2_integration" "websocket_ping" {
-  api_id           = aws_apigatewayv2_api.websocket.id
-  integration_type = "MOCK"
-
-  request_templates = {
-    "application/json" = <<EOF
-{
-    "statusCode": 200,
-    "message": "pong"
-}
-EOF
-  }
-}
-resource "aws_apigatewayv2_integration_response" "websocket_ping" {
-  api_id                   = aws_apigatewayv2_api.websocket.id
-  integration_id           = aws_apigatewayv2_integration.websocket_ping.id
-  integration_response_key = "/200/"
-}
-resource "aws_apigatewayv2_route_response" "websocket_ping" {
-  api_id             = aws_apigatewayv2_api.websocket.id
-  route_id           = aws_apigatewayv2_route.websocket_ping.id
   route_response_key = "$default"
 }
 
@@ -219,8 +142,7 @@ resource "aws_iam_role_policy" "websocket" {
                 "dynamodb:DeleteItem"
             ],
             "Resource": [
-              "${aws_dynamodb_table.websocket_connections.arn}",
-              "${aws_dynamodb_table.websocket_commands.arn}"
+              "${aws_dynamodb_table.websocket_connections.arn}"
             ]
         },
         {
@@ -229,7 +151,7 @@ resource "aws_iam_role_policy" "websocket" {
                 "lambda:InvokeFunction"
             ],
             "Resource": ${jsonencode(concat(
-  [aws_lambda_function.api.arn],
+  [aws_lambda_function.ws.arn],
   var.auth_module == null ? [] : [
     var.auth_module.authorizer_lambda.arn,
     var.auth_module.authorizer_lambda.invoke_arn

@@ -7,7 +7,7 @@ module "auth" {
   hosted_zone_id = concat(data.aws_route53_zone.domain.*.zone_id, [null])[0]
 
   redirect_urls         = local.redirect_urls
-  allow_unauthenticated = local.api == null ? true : local.api.allow_unauthenticated
+  allow_unauthenticated = local.ws == null ? true : local.ws.allow_unauthenticated
 
   providers = {
     aws    = aws

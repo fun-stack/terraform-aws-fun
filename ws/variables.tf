@@ -39,7 +39,7 @@ variable "environment" {
 }
 
 locals {
-  module_name  = basename(abspath(path.module))
-  prefix       = "${var.prefix}-${local.module_name}"
-  api_zip_file = "${path.module}/api.zip"
+  module_name = basename(abspath(path.module))
+  prefix      = "${var.prefix}-${local.module_name}"
+  ws_zip_file = "${path.module}/${local.prefix}-ws.zip"
 }

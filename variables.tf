@@ -55,7 +55,7 @@ variable "website" {
   })
 }
 
-variable "api" {
+variable "ws" {
   description = "ws module with api gateway websockets"
   type = object({
     source_dir            = string
@@ -101,7 +101,7 @@ locals {
     cache_files_max_age = 31536000
   })
 
-  api = var.api == null ? null : defaults(var.api, {
+  ws = var.ws == null ? null : defaults(var.ws, {
     allow_unauthenticated = false
   })
 
@@ -123,7 +123,7 @@ locals {
 
   domain_website_real = coalesce(local.domain, aws_cloudfront_distribution.website.domain_name)
   domain_auth_real    = length(module.auth) > 0 ? coalesce(local.domain_auth, module.auth[0].endpoint) : null
-  domain_ws_real      = length(module.api) > 0 ? coalesce(local.domain_ws, module.api[0].endpoint) : null
+  domain_ws_real      = length(module.ws) > 0 ? coalesce(local.domain_ws, module.ws[0].endpoint) : null
   domain_http_real    = length(module.http) > 0 ? coalesce(local.domain_http, module.http[0].endpoint) : null
 
   redirect_urls = concat(
@@ -152,10 +152,10 @@ locals {
     environment = local.website.environment == null ? {} : local.website.environment
   }
 
-  app_config_api = local.api == null ? {} : {
-    api = {
+  app_config_ws = local.ws == null ? {} : {
+    ws = {
       domain               = local.domain_ws_real
-      allowUnauthenticated = local.api.allow_unauthenticated
+      allowUnauthenticated = local.ws.allow_unauthenticated
     }
   }
 
@@ -165,10 +165,10 @@ locals {
     }
   }
 
-  app_config_dev_api = local.api == null ? {} : {
-    api = {
+  app_config_dev_ws = local.ws == null ? {} : {
+    ws = {
       domain               = local.is_dev && var.dev_setup.local_ws_host != null ? var.dev_setup.local_ws_host : local.domain_ws_real
-      allowUnauthenticated = local.api.allow_unauthenticated
+      allowUnauthenticated = local.ws.allow_unauthenticated
     }
   }
 
@@ -186,10 +186,10 @@ locals {
   }
 
   app_config_js = <<EOF
-window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_api, local.app_config_http, local.app_config_auth))};
+window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_ws, local.app_config_http, local.app_config_auth))};
 EOF
 
   app_config_dev_js = <<EOF
-window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_dev_api, local.app_config_dev_http, local.app_config_auth))};
+window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_dev_ws, local.app_config_dev_http, local.app_config_auth))};
 EOF
 }
