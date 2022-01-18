@@ -135,7 +135,7 @@ locals {
   url_http    = length(module.http) > 0 ? coalesce(local.domain_http == null ? null : "https://${local.domain_http}", module.http[0].url) : null
 
   redirect_urls = concat(
-    ["https://${local.url_website}"],
+    [local.url_website],
     local.dev_setup.enabled && local.dev_setup.local_website_url != null ? [local.dev_setup.local_website_url] : []
   )
 
