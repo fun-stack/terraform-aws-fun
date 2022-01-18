@@ -1,4 +1,5 @@
 data "archive_file" "http" {
+  count       = var.source_bucket == null ? 1 : 0
   type        = "zip"
   source_dir  = var.source_dir
   output_path = local.http_zip_file
@@ -19,8 +20,10 @@ resource "aws_lambda_function" "http" {
 
   runtime          = var.runtime
   handler          = var.handler
-  filename         = local.http_zip_file
-  source_code_hash = data.archive_file.http.output_base64sha256
+  s3_bucket        = var.source_bucket
+  s3_key           = var.source_bucket == null ? null : var.source_dir
+  filename         = var.source_bucket == null ? local.http_zip_file : null
+  source_code_hash = var.source_bucket == null ? data.archive_file.http[0].output_base64sha256 : null
 
 
   dynamic "environment" {

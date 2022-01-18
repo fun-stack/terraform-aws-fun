@@ -18,6 +18,10 @@ variable "source_dir" {
   type = string
 }
 
+variable "source_bucket" {
+  type = string
+}
+
 variable "timeout" {
   type = number
 }

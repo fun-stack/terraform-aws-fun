@@ -50,17 +50,26 @@ Create a new file `fun.tf`:
 ```tf
 module "fun" {
   source  = "fun-stack/fun/aws"
-  version = "0.1.2"
+  version = "0.2.0"
 
   domain = "<my-domain>" // there needs to exist a hosted zone with that domain name in your aws account
+  deploy_to_root_domain = true
 
-  environment = "dev"
+  stage = "prod"
 
   website = {
     source_dir = "<directory from where to copy website files>"
   }
 
-  api = {
+  ws = {
+    source_dir  = "<directory from where to copy lambda files>"
+    handler     = "<exported handler of you lambda>"
+    runtime     = "nodejs14.x"
+    timeout     = 30
+    memory_size = 256
+  }
+
+  http = {
     source_dir  = "<directory from where to copy lambda files>"
     handler     = "<exported handler of you lambda>"
     runtime     = "nodejs14.x"

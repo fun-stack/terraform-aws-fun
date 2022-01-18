@@ -60,6 +60,7 @@ variable "ws" {
   description = "ws module with api gateway websockets"
   type = object({
     source_dir            = string
+    source_bucket         = optional(string)
     handler               = string
     runtime               = string
     timeout               = number
@@ -73,12 +74,13 @@ variable "ws" {
 variable "http" {
   description = "http module with api gateway http"
   type = object({
-    source_dir  = string
-    handler     = string
-    runtime     = string
-    timeout     = number
-    memory_size = number
-    environment = optional(map(string))
+    source_dir    = string
+    source_bucket = optional(string)
+    handler       = string
+    runtime       = string
+    timeout       = number
+    memory_size   = number
+    environment   = optional(map(string))
   })
   default = null
 }
