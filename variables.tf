@@ -33,7 +33,7 @@ variable "dev_setup" {
     local_http_url    = optional(string)
     local_ws_url      = optional(string)
   })
-  default = null
+  default = {}
 }
 
 variable "auth" {
@@ -100,10 +100,9 @@ locals {
   # dev_setup = defaults(var.dev_setup == null ? {} : var.dev_setup, {
   #   enabled = true
   # })
-  dev_setup_defaults = {
+  dev_setup = defaults(var.dev_setup, {
     enabled = true
-  }
-  dev_setup = var.dev_setup == null ? local.dev_setup_defaults : defaults(var.dev_setup, local.dev_setup_defaults)
+  })
 
   website = var.website == null ? null : defaults(var.website, {
     index_file          = "index.html"
