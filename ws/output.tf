@@ -3,5 +3,5 @@ output "ws_role" {
 }
 
 output "url" {
-  value = "${aws_apigatewayv2_api.websocket.api_endpoint}/latest"
+  value = "${replace(aws_apigatewayv2_api.websocket.api_endpoint, "https://", "wss://")}/latest"
 }

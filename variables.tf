@@ -126,7 +126,7 @@ locals {
 
   url_website = coalesce(local.domain, "https://${aws_cloudfront_distribution.website.domain_name}")
   url_auth    = length(module.auth) > 0 ? coalesce(local.domain_auth == null ? null : "https://${local.domain_auth}", module.auth[0].url) : null
-  url_ws      = length(module.ws) > 0 ? coalesce(local.domain_ws ? null : "https://${local.domain_ws}", module.ws[0].url) : null
+  url_ws      = length(module.ws) > 0 ? coalesce(local.domain_ws ? null : "wss://${local.domain_ws}", module.ws[0].url) : null
   url_http    = length(module.http) > 0 ? coalesce(local.domain_http ? null : "https://${local.domain_http}", module.http[0].url) : null
 
   redirect_urls = concat(
