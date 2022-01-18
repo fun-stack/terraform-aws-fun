@@ -167,7 +167,7 @@ data "aws_s3_bucket_objects" "website" {
 }
 
 resource "aws_s3_object_copy" "website" {
-  for_each = flatten(data.aws_s3_bucket_objects.website[*].keys)
+  for_each = toset(local.website.source_bucket != null ? data.aws_s3_bucket_objects.website[0].keys : [])
 
   bucket = aws_s3_bucket.website.bucket
   key    = each.key
