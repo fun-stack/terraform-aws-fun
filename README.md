@@ -53,7 +53,6 @@ module "fun" {
   version = "0.2.0"
 
   domain = "<my-domain>" // there needs to exist a hosted zone with that domain name in your aws account
-  deploy_to_root_domain = true
 
   stage = "prod"
 
@@ -103,6 +102,10 @@ Cognito user-pool.
 ### Websocket-Api
 
 Authorized websocket with API Gateway.
+
+### HTTP-Api
+
+Http with API Gateway.
 
 ### Website
 
