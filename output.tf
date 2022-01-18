@@ -10,20 +10,20 @@ output "prefix" {
   value = local.prefix
 }
 
-output "domain_website" {
-  value = local.domain_website_real
+output "url_website" {
+  value = local.url_website
 }
 
-output "domain_http" {
-  value = local.domain_http_real
+output "url_http" {
+  value = local.url_http
 }
 
-output "domain_ws" {
-  value = local.domain_ws_real
+output "url_ws" {
+  value = local.url_ws
 }
 
-output "domain_auth" {
-  value = local.domain_auth_real
+output "url_auth" {
+  value = local.url_auth
 }
 
 output "hosted_zone_id" {

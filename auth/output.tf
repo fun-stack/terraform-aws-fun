@@ -10,6 +10,6 @@ output "authorizer_lambda" {
   value = aws_lambda_function.authorizer
 }
 
-output "endpoint" {
-  value = var.domain == null ? "${aws_cognito_user_pool_domain.user.domain}.auth.${data.aws_region.current.name}.amazoncognito.com" : var.domain
+output "url" {
+  value = var.domain == null ? "https://${aws_cognito_user_pool_domain.user.domain}.auth.${data.aws_region.current.name}.amazoncognito.com" : "https://${var.domain}"
 }

@@ -30,8 +30,8 @@ variable "dev_setup" {
   type = object({
     enabled           = optional(bool)
     local_website_url = optional(string)
-    local_http_host   = optional(string)
-    local_ws_host     = optional(string)
+    local_http_url    = optional(string)
+    local_ws_url      = optional(string)
   })
   default = null
 }
@@ -124,13 +124,13 @@ locals {
   domain_ws      = local.domain == null ? null : "ws.${local.domain}"
   domain_http    = local.domain == null ? null : "api.${local.domain}"
 
-  domain_website_real = coalesce(local.domain, aws_cloudfront_distribution.website.domain_name)
-  domain_auth_real    = length(module.auth) > 0 ? coalesce(local.domain_auth, module.auth[0].endpoint) : null
-  domain_ws_real      = length(module.ws) > 0 ? coalesce(local.domain_ws, module.ws[0].endpoint) : null
-  domain_http_real    = length(module.http) > 0 ? coalesce(local.domain_http, module.http[0].endpoint) : null
+  url_website = coalesce(local.domain, "https://${aws_cloudfront_distribution.website.domain_name}")
+  url_auth    = length(module.auth) > 0 ? coalesce(local.domain_auth == null ? null : "https://${local.domain_auth}", module.auth[0].url) : null
+  url_ws      = length(module.ws) > 0 ? coalesce(local.domain_ws ? null : "https://${local.domain_ws}", module.ws[0].url) : null
+  url_http    = length(module.http) > 0 ? coalesce(local.domain_http ? null : "https://${local.domain_http}", module.http[0].url) : null
 
   redirect_urls = concat(
-    ["https://${local.domain_website_real}"],
+    ["https://${local.url_website}"],
     local.is_dev && lookup(var.dev_setup == null ? {} : var.dev_setup, "local_website_url", null) != null ? [var.dev_setup.local_website_url] : []
   )
 
@@ -150,40 +150,40 @@ locals {
     stage  = var.stage,
     region = data.aws_region.current.name,
     website = {
-      domain = local.domain_website_real
+      url = local.url_website
     }
     environment = local.website.environment == null ? {} : local.website.environment
   }
 
   app_config_ws = local.ws == null ? {} : {
     ws = {
-      domain               = local.domain_ws_real
+      url                  = local.url_ws
       allowUnauthenticated = local.ws.allow_unauthenticated
     }
   }
 
   app_config_http = local.http == null ? {} : {
     http = {
-      domain = local.domain_http_real
+      url = local.url_http
     }
   }
 
   app_config_dev_ws = local.ws == null ? {} : {
     ws = {
-      domain               = local.is_dev && var.dev_setup.local_ws_host != null ? var.dev_setup.local_ws_host : local.domain_ws_real
+      url                  = local.is_dev && var.dev_setup.local_ws_url != null ? var.dev_setup.local_ws_url : local.url_ws
       allowUnauthenticated = local.ws.allow_unauthenticated
     }
   }
 
   app_config_dev_http = local.http == null ? {} : {
     http = {
-      domain = local.is_dev && var.dev_setup.local_http_host != null ? var.dev_setup.local_http_host : local.domain_http_real
+      url = local.is_dev && var.dev_setup.local_http_url != null ? var.dev_setup.local_http_url : local.url_http
     }
   }
 
   app_config_auth = local.auth == null ? {} : {
     auth = {
-      domain       = local.domain_auth_real
+      url          = local.url_auth
       clientIdAuth = module.auth[0].user_pool_client.id
     }
   }
