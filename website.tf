@@ -170,7 +170,7 @@ resource "aws_s3_object_copy" "website" {
   for_each = toset(local.website.source_bucket != null ? data.aws_s3_bucket_objects.website[0].keys : [])
 
   bucket = aws_s3_bucket.website.bucket
-  key    = each.key
+  key    = trimprefix(substr(each.key, length(local.website.source_dir), length(each.key)), "/")
   source = "${local.website.source_bucket}/${each.key}"
 
   cache_control = length(local.website.cache_files_regex) > 0 && length(regexall(local.website.cache_files_regex, each.key)) > 0 ? "max-age=${local.website.cache_files_max_age}" : "no-cache"
