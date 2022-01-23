@@ -2,6 +2,11 @@ resource "aws_acm_certificate" "domain" {
   domain_name               = var.domain
   subject_alternative_names = [for d in var.sub_domains : "${d}.${var.domain}"]
   validation_method         = "DNS"
+
+  // TODO: Needed for https://github.com/hashicorp/terraform-provider-aws/issues/20957
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_route53_record" "dns_caa" {
