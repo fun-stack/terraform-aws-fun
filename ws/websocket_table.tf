@@ -13,6 +13,11 @@ resource "aws_dynamodb_table" "websocket_connections" {
     type = "S"
   }
 
+  ttl {
+    attribute_name = "ttl"
+    enabled        = true
+  }
+
   global_secondary_index {
     name            = "user_id_index"
     hash_key        = "user_id"

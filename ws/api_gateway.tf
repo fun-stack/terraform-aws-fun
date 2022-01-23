@@ -47,6 +47,10 @@ resource "aws_apigatewayv2_integration" "websocket_connect" {
     "application/json" = <<EOF
 {
     "Item": {
+      #set($delete_connection_at = ($context.requestTimeEpoch / 1000) + 9000)
+      "ttl": {
+        "N": "$delete_connection_at"
+      },
       "connection_id": {
         "S": "$context.connectionId"
       },
