@@ -43,6 +43,7 @@ resource "aws_apigatewayv2_integration" "websocket_connect" {
   integration_uri    = "arn:aws:apigateway:${data.aws_region.current.name}:dynamodb:action/PutItem"
   credentials_arn    = aws_iam_role.websocket.arn
 
+  # ttl after 9000 secs = 2.5 hours, because of connection duration on api gateway: https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html
   request_templates = {
     "application/json" = <<EOF
 {
