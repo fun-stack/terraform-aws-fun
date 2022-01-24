@@ -106,13 +106,15 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
     try {
         console.log(`user claim verify invoked for ${JSON.stringify(request)}`);
         const token = request.queryStringParameters.token;
-        if (token == "anon") {
+        if (token == null || token == '') {
             if (allowUnauthenticated) {
                 return {
                     principalId: 'anon',
                     policyDocument: generatePolicy(request.methodArn, "Allow"),
                     context: {}
                 }
+            } else {
+                throw new Error('Unauthenticated');
             }
         }
 

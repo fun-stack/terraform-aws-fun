@@ -119,6 +119,5 @@ resource "aws_route53_record" "httpapi" {
 #   authorizer_type            = "REQUEST"
 #   authorizer_uri             = var.auth_module.authorizer_lambda.invoke_arn
 #   authorizer_credentials_arn = aws_iam_role.httpapi.arn
-#   identity_sources           = ["route.request.querystring.token"]
 #   name                       = "authorize-httpapi"
 # }

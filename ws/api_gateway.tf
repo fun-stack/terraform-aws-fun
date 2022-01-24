@@ -219,6 +219,5 @@ resource "aws_apigatewayv2_authorizer" "websocket" {
   authorizer_type            = "REQUEST"
   authorizer_uri             = var.auth_module.authorizer_lambda.invoke_arn
   authorizer_credentials_arn = aws_iam_role.websocket.arn
-  identity_sources           = ["route.request.querystring.token"]
   name                       = "authorize-websocket"
 }
