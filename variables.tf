@@ -80,6 +80,7 @@ variable "http" {
     runtime       = string
     timeout       = number
     memory_size   = number
+    cors_protected        = optional(bool)
     environment   = optional(map(string))
   })
   default = null
@@ -116,6 +117,7 @@ locals {
   })
 
   http = var.http == null ? null : defaults(var.http, {
+    cors_protected        = true
   })
 
   auth = var.auth == null ? null : defaults(var.auth, {

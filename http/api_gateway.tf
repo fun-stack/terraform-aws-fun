@@ -1,10 +1,15 @@
 resource "aws_apigatewayv2_api" "httpapi" {
   name          = "${local.prefix}-httpapi"
   protocol_type = "HTTP"
-  cors_configuration {
-    allow_origins = var.allow_origins
-    allow_methods = ["GET", "POST", "PUT", "DELETE"]
-    allow_headers = ["authorization"]
+
+  dynamic "cors_configuration" {
+    for_each = var.allow_origins == null ? [] : ["0"]
+
+    content {
+      allow_origins = var.allow_origins
+      allow_methods = ["GET", "POST", "PUT", "DELETE"]
+      allow_headers = ["authorization"]
+    }
   }
 }
 
