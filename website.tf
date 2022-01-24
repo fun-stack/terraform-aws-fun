@@ -83,10 +83,10 @@ resource "aws_cloudfront_distribution" "website" {
     }
 
     dynamic "function_association" {
-      for_each = aws_cloudfront_function.redirect_function.*.arn
+      for_each = local.domain_website == null ? [] : ["0"]
       content {
         event_type   = "viewer-request"
-        function_arn = each.value
+        function_arn = aws_cloudfront_function.redirect_function[0].arn
       }
     }
 
