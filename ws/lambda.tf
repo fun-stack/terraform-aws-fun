@@ -22,11 +22,10 @@ resource "aws_lambda_function" "ws" {
   filename         = local.ws_zip_file
   source_code_hash = data.archive_file.ws.output_base64sha256
 
-  dynamic "environment" {
-    for_each = var.environment == null || length(keys(var.environment)) == 0 ? [] : ["0"]
-    content {
-      variables = var.environment
-    }
+  environment {
+    variables = merge(var.environment == null ? {} : var.environment, {
+      FUN_WEBSOCKET_CONNECTIONS_DYNAMODB_TABLE = aws_dynamodb_table.websocket_connections.id
+    })
   }
 }
 
@@ -51,4 +50,9 @@ EOF
 resource "aws_iam_role_policy_attachment" "lambda_ws" {
   role       = aws_iam_role.lambda_ws.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_ws_connections" {
+  role       = aws_iam_role.lambda_ws.name
+  policy_arn = aws_iam_policy.websocket_connections.arn
 }

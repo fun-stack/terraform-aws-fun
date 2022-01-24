@@ -19,7 +19,7 @@ resource "aws_dynamodb_table" "websocket_connections" {
   }
 
   global_secondary_index {
-    name            = "user_id_index"
+    name            = local.websocket_connections_index_name
     hash_key        = "user_id"
     range_key       = "connection_id"
     projection_type = "ALL"

@@ -15,10 +15,18 @@ module "http" {
   runtime       = local.http.runtime
   handler       = local.http.handler
 
-  environment = local.http.environment
+  environment = module.ws == null ? local.http.environment : merge(local.http.environment == null ? {} : local.http.environment, {
+    FUN_WEBSOCKET_CONNECTIONS_DYNAMODB_TABLE = module.ws[0].connections_table
+  })
 
   providers = {
     aws    = aws
     aws.us = aws.us
   }
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_http_ws_connections" {
+  count      = module.ws == null || module.http == null ? 0 : 1
+  role       = module.http[0].http_role.name
+  policy_arn = module.ws[0].connections_policy_arn
 }
