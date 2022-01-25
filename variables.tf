@@ -30,8 +30,6 @@ variable "dev_setup" {
   type = object({
     enabled           = optional(bool)
     local_website_url = optional(string)
-    local_http_url    = optional(string)
-    local_ws_url      = optional(string)
   })
   default = {}
 }
@@ -175,19 +173,6 @@ locals {
     }
   }
 
-  app_config_dev_ws = local.ws == null ? {} : {
-    ws = {
-      url                  = local.dev_setup.enabled && local.dev_setup.local_ws_url != null ? local.dev_setup.local_ws_url : local.url_ws
-      allowUnauthenticated = local.ws.allow_unauthenticated
-    }
-  }
-
-  app_config_dev_http = local.http == null ? {} : {
-    http = {
-      url = local.dev_setup.enabled && local.dev_setup.local_http_url != null ? local.dev_setup.local_http_url : local.url_http
-    }
-  }
-
   app_config_auth = local.auth == null ? {} : {
     auth = {
       url      = local.url_auth
@@ -199,7 +184,5 @@ locals {
 window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_ws, local.app_config_http, local.app_config_auth))};
 EOF
 
-  app_config_dev_js = <<EOF
-window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_dev_ws, local.app_config_dev_http, local.app_config_auth))};
-EOF
+  app_config_js_filename = "${path.module}/serve/app_config.js"
 }
