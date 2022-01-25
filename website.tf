@@ -82,12 +82,9 @@ resource "aws_cloudfront_distribution" "website" {
       }
     }
 
-    dynamic "function_association" {
-      for_each = local.domain_website == null ? [] : ["0"]
-      content {
-        event_type   = "viewer-request"
-        function_arn = aws_cloudfront_function.redirect_function[0].arn
-      }
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.redirect_function.arn
     }
 
     compress               = true
@@ -107,27 +104,32 @@ resource "aws_cloudfront_distribution" "website" {
 }
 
 resource "aws_cloudfront_function" "redirect_function" {
-  count   = local.domain_website == null ? 0 : 1
   name    = "${local.prefix}-redirect"
   runtime = "cloudfront-js-1.0"
-  comment = "redirect all subdomains to ${local.domain_website}"
   publish = true
   code    = <<EOF
+var rewrites = ${jsonencode(local.website.rewrites == null ? {} : local.website.rewrites)};
+var domain = "${local.domain_website == null ? "" : local.domain_website}";
 function handler(event) {
   var request = event.request;
-  var uri = request.uri;
   var host = request.headers.host.value;
-  var newurl = "https://" + "${local.domain_website}" + uri;
 
-  if (host !== "${local.domain_website}") {
+  if (domain !== "" && host !== domain) {
+    var newurl = "https://" + domain + request.uri;
     var response = {
       statusCode: 302,
       statusDescription: 'Found',
       headers:
         { "location": { "value": newurl } }
-    }
+    };
 
     return response;
+  }
+
+  var pathWithoutSlash = request.uri.substr(1, request.uri.length);
+  var redirectTo = rewrites[pathWithoutSlash];
+  if (redirectTo) {
+    request.uri = "/" + redirectTo;
   }
 
   return request;

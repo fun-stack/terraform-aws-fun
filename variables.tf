@@ -51,6 +51,7 @@ variable "website" {
     cache_files_regex   = optional(string)
     cache_files_max_age = optional(number)
     environment         = optional(map(string))
+    rewrites            = optional(map(string))
   })
 }
 
@@ -72,14 +73,14 @@ variable "ws" {
 variable "http" {
   description = "http module with api gateway http"
   type = object({
-    source_dir    = string
-    source_bucket = optional(string)
-    handler       = string
-    runtime       = string
-    timeout       = number
-    memory_size   = number
-    cors_protected        = optional(bool)
-    environment   = optional(map(string))
+    source_dir     = string
+    source_bucket  = optional(string)
+    handler        = string
+    runtime        = string
+    timeout        = number
+    memory_size    = number
+    cors_protected = optional(bool)
+    environment    = optional(map(string))
   })
   default = null
 }
