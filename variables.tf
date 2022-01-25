@@ -140,17 +140,8 @@ locals {
     local.dev_setup.enabled && local.dev_setup.local_website_url != null ? [local.dev_setup.local_website_url] : []
   )
 
-  content_type_map = {
-    html = "text/html",
-    js   = "application/javascript",
-    css  = "text/css",
-    svg  = "image/svg+xml",
-    jpg  = "image/jpeg",
-    ico  = "image/x-icon",
-    png  = "image/png",
-    gif  = "image/gif",
-    pdf  = "application/pdf"
-  }
+  # wget --output-document mime.json https://raw.githubusercontent.com/micnic/mime.json/master/index.json
+  content_type_map = jsondecode(file("${path.module}/mime.json"))
 
   app_config = {
     stage  = var.stage,
