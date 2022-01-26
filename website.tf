@@ -188,7 +188,7 @@ resource "aws_s3_bucket_object" "website" {
   etag   = filemd5("${local.website.source_dir}/${each.key}")
 
   cache_control = length(local.website.cache_files_regex) > 0 && length(regexall(local.website.cache_files_regex, each.key)) > 0 ? "max-age=${local.website.cache_files_max_age}" : "no-cache"
-  content_type  = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9.]+)$", each.key).extension, null)
+  content_type  = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9]+)$", each.key).extension, null)
 }
 
 resource "aws_s3_bucket_object" "config_file" {
