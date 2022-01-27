@@ -12,7 +12,7 @@ resource "aws_iam_policy" "websocket_connections" {
           "dynamodb:Query",
           "dynamodb:ConditionCheckItem"
         ]
-        Effect   = "Allow"
+        Effect = "Allow"
         Resource = [
           aws_dynamodb_table.websocket_connections.arn,
           "${aws_dynamodb_table.websocket_connections.arn}/index/${local.websocket_connections_index_name}"
@@ -20,11 +20,12 @@ resource "aws_iam_policy" "websocket_connections" {
       },
       {
         Action = [
-          "execute-api:Invoke"
+          "execute-api:Invoke",
+          "execute-api:ManageConnections"
         ]
-        Effect   = "Allow"
+        Effect = "Allow"
         Resource = [
-          "${aws_apigatewayv2_api.websocket.execution_arn}/POST/@connections"
+          "${aws_apigatewayv2_api.websocket.execution_arn}/*"
         ]
       },
     ]

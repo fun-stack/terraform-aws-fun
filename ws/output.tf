@@ -1,9 +1,13 @@
+locals {
+  api_gateway_url = "${aws_apigatewayv2_api.websocket.api_endpoint}/latest"
+}
+
 output "ws_role" {
   value = aws_iam_role.lambda_ws
 }
 
 output "url" {
-  value = "${replace(aws_apigatewayv2_api.websocket.api_endpoint, "https://", "wss://")}/latest"
+  value = "${aws_apigatewayv2_api.websocket.api_endpoint}/latest"
 }
 
 output "connections_table" {

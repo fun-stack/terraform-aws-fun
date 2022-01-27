@@ -17,6 +17,7 @@ module "http" {
 
   environment = module.ws == null ? local.http.environment : merge(local.http.environment == null ? {} : local.http.environment, {
     FUN_WEBSOCKET_CONNECTIONS_DYNAMODB_TABLE = module.ws[0].connections_table
+    FUN_WEBSOCKET_API_GATEWAY_ENDPOINT       = replace(module.ws[0].url, "wss://", "")
   })
 
   providers = {
@@ -24,6 +25,7 @@ module "http" {
     aws.us = aws.us
   }
 }
+
 
 resource "aws_iam_role_policy_attachment" "lambda_http_ws_connections" {
   count      = module.ws == null || module.http == null ? 0 : 1

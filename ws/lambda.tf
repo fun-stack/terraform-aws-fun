@@ -25,6 +25,7 @@ resource "aws_lambda_function" "ws" {
   environment {
     variables = merge(var.environment == null ? {} : var.environment, {
       FUN_WEBSOCKET_CONNECTIONS_DYNAMODB_TABLE = aws_dynamodb_table.websocket_connections.id
+      FUN_WEBSOCKET_API_GATEWAY_ENDPOINT       = replace(local.api_gateway_url, "wss://", "")
     })
   }
 }
