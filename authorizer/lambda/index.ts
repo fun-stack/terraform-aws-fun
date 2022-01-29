@@ -124,19 +124,19 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
             else if (identitySource === "QUERYSTRING") {
                 return request.queryStringParameters.token
             }
-            else throw new Error("Unknown IDENTITY_SOURCE: " + identitySource);
+            else throw new Error("unknown IDENTITY_SOURCE: " + identitySource);
         })()
 
         if (token == null || token == '') {
             if (allowUnauthenticated) {
-                console.log("anon allowed");
+                console.log("Allow: anonymous");
                 return {
                     principalId: 'anon',
                     policyDocument: generatePolicy(resourceArn, "Allow"),
                     context: {}
                 }
             } else {
-                throw new Error('Unauthenticated');
+                throw new Error('unauthenticated');
             }
         }
 
@@ -166,14 +166,14 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
             throw new Error('claim use is not access');
         }
 
-        console.log(`claim confirmed for ${claim.username}`);
+        console.log(`Allow: claim confirmed for ${claim.username}`);
         return {
             principalId: 'user',
             policyDocument: generatePolicy(resourceArn, "Allow"),
             context: claim
         };
     } catch (error) {
-        console.error("Failed to verify token", error);
+        console.error("Deny: Failed to verify token", error);
         return {
             principalId: null,
             policyDocument: generatePolicy(resourceArn, "Deny"),
