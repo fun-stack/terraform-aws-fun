@@ -1,5 +1,5 @@
 resource "aws_iam_policy" "websocket_connections" {
-  name = "${local.prefix}-websocket-connections"
+  name = "${local.prefix}-connections"
 
   policy = jsonencode({
     Version = "2012-10-17"

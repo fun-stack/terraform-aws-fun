@@ -31,7 +31,7 @@ resource "aws_cognito_resource_server" "user" {
 
   scope {
     scope_name        = "api"
-    scope_description = "Get access to all API Gateway WS endpoints."
+    scope_description = "Get access to all API Gateway endpoints for http and ws."
   }
 }
 resource "aws_cognito_user_pool_client" "website_client" {
@@ -65,9 +65,9 @@ resource "aws_cognito_user_pool_client" "website_client" {
 }
 
 resource "random_pet" "domain_name" {
-  count = var.domain == null ? 1 : 0
+  count     = var.domain == null ? 1 : 0
   separator = "-"
-  length = "3"
+  length    = "3"
 }
 
 resource "aws_cognito_user_pool_domain" "user" {

@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "websocket" {
-  name                       = "${local.prefix}-websocket"
+  name                       = local.prefix
   protocol_type              = "WEBSOCKET"
   route_selection_expression = "$request.body.action"
 }
@@ -115,7 +115,7 @@ resource "aws_apigatewayv2_route_response" "websocket_disconnect" {
 }
 
 resource "aws_iam_role" "websocket" {
-  name               = "${local.prefix}-websocket-api"
+  name               = "${local.prefix}-api"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -156,8 +156,8 @@ resource "aws_iam_role_policy" "websocket" {
             "Resource": ${jsonencode(concat(
   [aws_lambda_function.ws.arn],
   var.auth_module == null ? [] : [
-    var.auth_module.authorizer_lambda.arn,
-    var.auth_module.authorizer_lambda.invoke_arn
+    module.authorizer[0].lambda.arn,
+    module.authorizer[0].lambda.invoke_arn
   ]
 ))}
         }
@@ -215,7 +215,7 @@ resource "aws_apigatewayv2_authorizer" "websocket" {
 
   api_id                     = aws_apigatewayv2_api.websocket.id
   authorizer_type            = "REQUEST"
-  authorizer_uri             = var.auth_module.authorizer_lambda.invoke_arn
+  authorizer_uri             = module.authorizer[0].lambda.invoke_arn
   authorizer_credentials_arn = aws_iam_role.websocket.arn
   name                       = "authorize-websocket"
 }

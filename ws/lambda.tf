@@ -5,12 +5,12 @@ data "archive_file" "ws" {
 }
 
 resource "aws_cloudwatch_log_group" "lambda_ws" {
-  name              = "/aws/lambda/${local.prefix}-ws"
+  name              = "/aws/lambda/${local.prefix}"
   retention_in_days = 3
 }
 
 resource "aws_lambda_function" "ws" {
-  function_name = "${local.prefix}-ws"
+  function_name = local.prefix
   role          = aws_iam_role.lambda_ws.arn
 
   timeout     = var.timeout
@@ -31,7 +31,7 @@ resource "aws_lambda_function" "ws" {
 }
 
 resource "aws_iam_role" "lambda_ws" {
-  name               = "${local.prefix}-lambda-ws"
+  name               = "${local.prefix}-lambda"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",

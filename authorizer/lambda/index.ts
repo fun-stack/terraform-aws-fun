@@ -5,8 +5,10 @@ import jwkToPem from 'jwk-to-pem';
 
 export interface ClaimVerifyRequest {
     readonly queryStringParameters?: any;
+    readonly headers?: any;
     readonly type?: string;
-    readonly methodArn?: string;
+    readonly methodArn?: string | null;
+    readonly routeArn?: string | null;
 }
 
 export interface ClaimVerifyResult {
@@ -69,6 +71,8 @@ const cognitoPoolId = process.env.COGNITO_POOL_ID!;
 const cognitoApiScopes = process.env.COGNITO_API_SCOPES!;
 const allowUnauthenticated = process.env.ALLOW_UNAUTHENTICATED! === "true";
 const awsRegion = process.env.AWS_REGION!;
+const identitySource = process.env.IDENTITY_SOURCE!;
+
 const cognitoIssuer = `https://cognito-idp.${awsRegion}.amazonaws.com/${cognitoPoolId}`;
 
 let cacheKeys: MapOfKidToPublicKey | undefined;
@@ -103,14 +107,32 @@ function generatePolicy(resource: string, effect: string): AWSPolicy {
 }
 
 const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> => {
+    const resourceArn = request.methodArn || request.routeArn;
+
     try {
-        console.log(`user claim verify invoked for ${JSON.stringify(request)}`);
-        const token = request.queryStringParameters.token;
+        // console.log(`user claim verify invoked for ${JSON.stringify(request)}`);
+        const token = (function () {
+            if (identitySource === "HEADER") {
+                const header = request.headers.authorization
+                if (header == null || header == '') return null;
+                const headerSections = header.split(' ');
+                if (headerSections.length < 2 || headerSections[0] != "Bearer") {
+                    throw new Error('expected bearer token');
+                }
+                return headerSections[1];
+            }
+            else if (identitySource === "QUERYSTRING") {
+                return request.queryStringParameters.token
+            }
+            else throw new Error("Unknown IDENTITY_SOURCE: " + identitySource);
+        })()
+
         if (token == null || token == '') {
             if (allowUnauthenticated) {
+                console.log("anon allowed");
                 return {
                     principalId: 'anon',
-                    policyDocument: generatePolicy(request.methodArn, "Allow"),
+                    policyDocument: generatePolicy(resourceArn, "Allow"),
                     context: {}
                 }
             } else {
@@ -147,14 +169,14 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
         console.log(`claim confirmed for ${claim.username}`);
         return {
             principalId: 'user',
-            policyDocument: generatePolicy(request.methodArn, "Allow"),
+            policyDocument: generatePolicy(resourceArn, "Allow"),
             context: claim
         };
     } catch (error) {
         console.error("Failed to verify token", error);
         return {
             principalId: null,
-            policyDocument: generatePolicy(request.methodArn, "Deny"),
+            policyDocument: generatePolicy(resourceArn, "Deny"),
             context: {}
         };
     }

@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "httpapi" {
-  name          = "${local.prefix}-httpapi"
+  name          = local.prefix
   protocol_type = "HTTP"
   cors_configuration {
     allow_origins = var.allow_origins
@@ -27,7 +27,7 @@ resource "aws_apigatewayv2_integration" "httpapi_default" {
 }
 
 resource "aws_iam_role" "httpapi" {
-  name               = "${local.prefix}-httpapi-api"
+  name               = "${local.prefix}-api"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -61,8 +61,8 @@ resource "aws_iam_role_policy" "httpapi" {
     aws_lambda_function.http.invoke_arn
   ],
   var.auth_module == null ? [] : [
-    var.auth_module.authorizer_lambda.arn,
-    var.auth_module.authorizer_lambda.invoke_arn
+    module.authorizer[0].lambda.arn,
+    module.authorizer[0].lambda.invoke_arn
   ]
 ))}
         }
@@ -120,9 +120,9 @@ resource "aws_apigatewayv2_authorizer" "httpapi" {
 
   api_id                            = aws_apigatewayv2_api.httpapi.id
   authorizer_type                   = "REQUEST"
-  authorizer_uri                    = var.auth_module.authorizer_lambda.invoke_arn
+  authorizer_uri                    = module.authorizer[0].lambda.invoke_arn
   authorizer_credentials_arn        = aws_iam_role.httpapi.arn
-  name                              = "authorize-httpapi"
+  name                              = "authorize-http"
   authorizer_result_ttl_in_seconds  = 0 # we need to configure an identity source for caching. But we want the auth token to be optional - and that is not possible with identity source.
-  authorizer_payload_format_version = "2.0"
+  authorizer_payload_format_version = "1.0"
 }

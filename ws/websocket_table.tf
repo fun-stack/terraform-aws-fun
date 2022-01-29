@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "websocket_connections" {
-  name         = "${local.prefix}-websocket-connections"
+  name         = "${local.prefix}-connections"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "connection_id"
 

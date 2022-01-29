@@ -2,12 +2,12 @@ output "user_pool_client" {
   value = aws_cognito_user_pool_client.website_client
 }
 
-output "user_pool" {
-  value = aws_cognito_user_pool.user
+output "api_scopes" {
+  value = aws_cognito_resource_server.user.scope_identifiers
 }
 
-output "authorizer_lambda" {
-  value = aws_lambda_function.authorizer
+output "user_pool" {
+  value = aws_cognito_user_pool.user
 }
 
 output "url" {

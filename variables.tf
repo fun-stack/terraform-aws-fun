@@ -73,13 +73,14 @@ variable "ws" {
 variable "http" {
   description = "http module with api gateway http"
   type = object({
-    source_dir     = string
-    source_bucket  = optional(string)
-    handler        = string
-    runtime        = string
-    timeout        = number
-    memory_size    = number
-    environment    = optional(map(string))
+    source_dir            = string
+    source_bucket         = optional(string)
+    handler               = string
+    runtime               = string
+    timeout               = number
+    memory_size           = number
+    allow_unauthenticated = optional(bool)
+    environment           = optional(map(string))
   })
   default = null
 }
@@ -108,10 +109,11 @@ locals {
   })
 
   ws = var.ws == null ? null : defaults(var.ws, {
-    allow_unauthenticated = false
+    allow_unauthenticated = true
   })
 
   http = var.http == null ? null : defaults(var.http, {
+    allow_unauthenticated = true
   })
 
   auth = var.auth == null ? null : defaults(var.auth, {
@@ -156,7 +158,8 @@ locals {
 
   app_config_http = local.http == null ? {} : {
     http = {
-      url = local.url_http
+      url                  = local.url_http
+      allowUnauthenticated = local.http.allow_unauthenticated
     }
   }
 
