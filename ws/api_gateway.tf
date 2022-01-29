@@ -48,19 +48,17 @@ resource "aws_apigatewayv2_integration" "websocket_connect" {
     "application/json" = <<EOF
 {
     "Item": {
-      #set($delete_connection_at = ($context.requestTimeEpoch / 1000) + 9000)
-      "ttl": {
-        "N": "$delete_connection_at"
-      },
       "connection_id": {
         "S": "$context.connectionId"
       },
+      #if("$context.authorizer.sub" != "")
       "user_id": {
-        #if("$context.authorizer.sub" == "")
-        "S": "anon"
-        #else
         "S": "$context.authorizer.sub"
-        #end
+      },
+      #end
+      #set($delete_connection_at = ($context.requestTimeEpoch / 1000) + 9000)
+      "ttl": {
+        "N": "$delete_connection_at"
       }
     },
     "TableName": "${aws_dynamodb_table.websocket_connections.name}"
