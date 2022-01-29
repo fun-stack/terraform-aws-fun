@@ -96,9 +96,6 @@ variable "budget" {
 locals {
   module_name = replace(basename(abspath(path.module)), "_", "-")
 
-  # dev_setup = defaults(var.dev_setup == null ? {} : var.dev_setup, {
-  #   enabled = true
-  # })
   dev_setup = defaults(var.dev_setup, {
     enabled = true
   })
