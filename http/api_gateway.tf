@@ -18,6 +18,9 @@ resource "aws_apigatewayv2_route" "httpapi_default" {
   api_id    = aws_apigatewayv2_api.httpapi.id
   route_key = "${each.value} /{proxy+}"
 
+  authorization_type = length(aws_apigatewayv2_authorizer.httpapi) > 0 ? "CUSTOM" : null
+  authorizer_id      = length(aws_apigatewayv2_authorizer.httpapi) > 0 ? aws_apigatewayv2_authorizer.httpapi[0].id : null
+
   target = "integrations/${aws_apigatewayv2_integration.httpapi_default.id}"
 }
 resource "aws_apigatewayv2_integration" "httpapi_default" {
@@ -117,12 +120,14 @@ resource "aws_route53_record" "httpapi" {
   }
 }
 
-# resource "aws_apigatewayv2_authorizer" "httpapi" {
-#   count = var.auth_module == null ? 0 : 1
+resource "aws_apigatewayv2_authorizer" "httpapi" {
+  count = var.auth_module == null ? 0 : 1
 
-#   api_id                     = aws_apigatewayv2_api.httpapi.id
-#   authorizer_type            = "REQUEST"
-#   authorizer_uri             = var.auth_module.authorizer_lambda.invoke_arn
-#   authorizer_credentials_arn = aws_iam_role.httpapi.arn
-#   name                       = "authorize-httpapi"
-# }
+  api_id                            = aws_apigatewayv2_api.httpapi.id
+  authorizer_type                   = "REQUEST"
+  authorizer_uri                    = var.auth_module.authorizer_lambda.invoke_arn
+  authorizer_credentials_arn        = aws_iam_role.httpapi.arn
+  name                              = "authorize-httpapi"
+  authorizer_result_ttl_in_seconds  = 0 # we need to configure an identity source for caching. But we want the auth token to be optional - and that is not possible with identity source.
+  authorizer_payload_format_version = "2.0"
+}
