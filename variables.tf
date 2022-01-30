@@ -9,21 +9,13 @@ variable "stage" {
 }
 
 variable "domain" {
-  description = "Deploy under a custom domain. for this to work, you will need a hosted zone for this domain in your aws account."
-  type        = string
-  default     = null
-}
-
-variable "deploy_to_root_domain" {
-  description = "Deploy to the root domain. If true, deploys app to the root domain. If false, deploys app to <stage>.env.<domain>."
-  type        = bool
-  default     = true
-}
-
-variable "catch_all_forward_to" {
-  description = "Email address to which all @domain email should be forwarded."
-  type        = string
-  default     = null
+  description = "Deploy under a custom domain. for this to work, you will need a hosted zone for the specified domain name in your aws account."
+  type = object({
+    name                = string
+    deploy_to_subdomain = optional(string)
+    catch_all_email     = optional(string)
+  })
+  default = null
 }
 
 variable "dev_setup" {
@@ -121,7 +113,7 @@ locals {
 
   prefix = "fun-${local.module_name}-${var.stage}"
 
-  domain         = var.deploy_to_root_domain || var.domain == null ? var.domain : "${var.stage}.env.${var.domain}"
+  domain         = var.domain == null ? null : (var.domain.deploy_to_subdomain == null || var.domain.deploy_to_subdomain == "" ? var.domain.name : "${var.domain.deploy_to_subdomain}.${var.domain.name}")
   domain_website = local.domain
   domain_auth    = local.domain == null ? null : "auth.${local.domain}"
   domain_ws      = local.domain == null ? null : "ws.${local.domain}"

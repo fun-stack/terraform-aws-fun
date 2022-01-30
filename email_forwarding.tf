@@ -1,5 +1,5 @@
 resource "aws_route53_record" "email_mx" {
-  count = var.catch_all_forward_to == null || var.domain == null ? 0 : 1
+  count = var.domain == null ? 0 : (var.domain.catch_all_email == null ? 0 : 1)
 
   name = local.domain_website
   records = [
@@ -12,11 +12,11 @@ resource "aws_route53_record" "email_mx" {
 }
 
 resource "aws_route53_record" "email_txt" {
-  count = var.catch_all_forward_to == null || var.domain == null ? 0 : 1
+  count = var.domain == null ? 0 : (var.domain.catch_all_email == null ? 0 : 1)
 
   name = local.domain_website
   records = [
-    "forward-email=${var.catch_all_forward_to}",
+    "forward-email=${var.domain.catch_all_email}",
     "v=spf1 a mx include:spf.forwardemail.net ~all",
   ]
   ttl     = 60
