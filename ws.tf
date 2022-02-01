@@ -15,10 +15,21 @@ module "ws" {
   runtime       = local.ws.runtime
   handler       = local.ws.handler
 
-  environment = local.ws.environment
+  environment = merge(
+    local.ws.environment == null ? {} : local.ws.environment,
+    module.auth == null ? {} : {
+      FUN_AUTH_COGNITO_POOL_ID = module.auth[0].user_pool.id
+    }
+  )
 
   providers = {
     aws    = aws
     aws.us = aws.us
   }
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_ws_auth_get_info" {
+  count      = module.auth == null || module.ws == null ? 0 : 1
+  role       = module.ws[0].ws_role.name
+  policy_arn = module.auth[0].get_info_policy_arn
 }

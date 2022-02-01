@@ -16,10 +16,16 @@ module "http" {
   runtime       = local.http.runtime
   handler       = local.http.handler
 
-  environment = length(module.ws) == 0 ? local.http.environment : merge(local.http.environment == null ? {} : local.http.environment, {
-    FUN_WEBSOCKET_CONNECTIONS_DYNAMODB_TABLE = module.ws[0].connections_table
-    FUN_WEBSOCKET_API_GATEWAY_ENDPOINT       = replace(module.ws[0].url, "wss://", "")
-  })
+  environment = merge(
+    local.http.environment == null ? {} : local.http.environment,
+    length(module.ws) == 0 ? {} : {
+      FUN_WEBSOCKET_CONNECTIONS_DYNAMODB_TABLE = module.ws[0].connections_table
+      FUN_WEBSOCKET_API_GATEWAY_ENDPOINT       = replace(module.ws[0].url, "wss://", "")
+    },
+    length(module.auth) == 0 ? {} : {
+      FUN_AUTH_COGNITO_POOL_ID = module.auth[0].user_pool.id
+    }
+  )
 
   providers = {
     aws    = aws
@@ -27,9 +33,14 @@ module "http" {
   }
 }
 
-
 resource "aws_iam_role_policy_attachment" "lambda_http_ws_connections" {
   count      = length(module.ws) == 0 || length(module.http) == 0 ? 0 : 1
   role       = module.http[0].http_role.name
   policy_arn = module.ws[0].connections_policy_arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_http_auth_get_info" {
+  count      = module.auth == null || module.http == null ? 0 : 1
+  role       = module.http[0].http_role.name
+  policy_arn = module.auth[0].get_info_policy_arn
 }
