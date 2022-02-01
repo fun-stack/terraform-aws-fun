@@ -5,7 +5,7 @@ Create an opionated app environment on AWS. With website, auth, and reactive api
 This repository contains reusable terraform modules to build this app.
 
 See Examples for how to use it:
-- Scala Project Template: [fun-stack.g8](https://github.com/fun-stack/fun-stack.g8)
+- Scala Project Template: [fun-stack-example](https://github.com/fun-stack/fun-stack-example)
 
 Also see client-library for helpers in your language:
 - Scala Client Library: [fun-stack-scala](https://github.com/fun-stack/fun-stack-scala)
@@ -52,9 +52,11 @@ module "fun" {
   source  = "fun-stack/fun/aws"
   version = "0.2.0"
 
-  domain = "<my-domain>" // there needs to exist a hosted zone with that domain name in your aws account
-
   stage = "prod"
+
+  domain = {
+    name = "<my-domain>" // there needs to exist a hosted zone with that domain name in your aws account
+  }
 
   website = {
     source_dir = "<directory from where to copy website files>"
@@ -101,11 +103,11 @@ Cognito user-pool.
 
 ### Websocket-Api
 
-Authorized websocket with API Gateway.
+(Authorized) Websocket with API Gateway.
 
 ### HTTP-Api
 
-Http with API Gateway.
+(Authorized) Http with API Gateway.
 
 ### Website
 

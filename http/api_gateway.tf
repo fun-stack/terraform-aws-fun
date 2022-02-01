@@ -9,66 +9,41 @@ resource "aws_apigatewayv2_api" "httpapi" {
 }
 
 resource "aws_apigatewayv2_route" "httpapi_default" {
-  for_each  = toset(["GET", "POST", "PUT", "DELETE"])
+  for_each  = var.api == null ? [] : toset(["GET", "POST", "PUT", "DELETE"])
   api_id    = aws_apigatewayv2_api.httpapi.id
   route_key = "${each.value} /{proxy+}"
 
   authorization_type = length(aws_apigatewayv2_authorizer.httpapi) > 0 ? "CUSTOM" : null
   authorizer_id      = length(aws_apigatewayv2_authorizer.httpapi) > 0 ? aws_apigatewayv2_authorizer.httpapi[0].id : null
 
-  target = "integrations/${aws_apigatewayv2_integration.httpapi_default.id}"
+  target = "integrations/${aws_apigatewayv2_integration.httpapi_default[0].id}"
 }
 resource "aws_apigatewayv2_integration" "httpapi_default" {
+  count                  = var.api == null ? 0 : 1
   api_id                 = aws_apigatewayv2_api.httpapi.id
   integration_type       = "AWS_PROXY"
   credentials_arn        = aws_iam_role.httpapi.arn
-  integration_uri        = aws_lambda_function.http.invoke_arn
+  integration_uri        = module.lambda_api[0].function.invoke_arn
   payload_format_version = "2.0"
 }
 
-resource "aws_iam_role" "httpapi" {
-  name               = "${local.prefix}-api"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "apigateway.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-}
+resource "aws_apigatewayv2_route" "httpapi_underscore" {
+  for_each  = var.api == null ? [] : toset(["POST"])
+  api_id    = aws_apigatewayv2_api.httpapi.id
+  route_key = "${each.value} /_/{proxy+}"
 
-resource "aws_iam_role_policy" "httpapi" {
-  role = aws_iam_role.httpapi.name
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "lambda:InvokeFunction"
-            ],
-            "Resource": ${jsonencode(concat(
-  [
-    aws_lambda_function.http.arn,
-    aws_lambda_function.http.invoke_arn
-  ],
-  var.auth_module == null ? [] : [
-    module.authorizer[0].lambda.arn,
-    module.authorizer[0].lambda.invoke_arn
-  ]
-))}
-        }
-    ]
+  authorization_type = length(aws_apigatewayv2_authorizer.httpapi) > 0 ? "CUSTOM" : null
+  authorizer_id      = length(aws_apigatewayv2_authorizer.httpapi) > 0 ? aws_apigatewayv2_authorizer.httpapi[0].id : null
+
+  target = "integrations/${aws_apigatewayv2_integration.httpapi_underscore[0].id}"
 }
-EOF
+resource "aws_apigatewayv2_integration" "httpapi_underscore" {
+  count                  = var.rpc == null ? 0 : 1
+  api_id                 = aws_apigatewayv2_api.httpapi.id
+  integration_type       = "AWS_PROXY"
+  credentials_arn        = aws_iam_role.httpapi.arn
+  integration_uri        = module.lambda_rpc[0].function.invoke_arn
+  payload_format_version = "2.0"
 }
 
 resource "aws_apigatewayv2_api_mapping" "httpapi" {
@@ -87,6 +62,7 @@ resource "aws_apigatewayv2_stage" "httpapi" {
     # data_trace_enabled       = true
     # detailed_metrics_enabled = true
     # logging_level            = "INFO"
+    # TODO configure?
     throttling_rate_limit  = 100
     throttling_burst_limit = 50
   }
@@ -120,7 +96,7 @@ resource "aws_apigatewayv2_authorizer" "httpapi" {
 
   api_id                            = aws_apigatewayv2_api.httpapi.id
   authorizer_type                   = "REQUEST"
-  authorizer_uri                    = module.authorizer[0].lambda.invoke_arn
+  authorizer_uri                    = module.authorizer[0].function.invoke_arn
   authorizer_credentials_arn        = aws_iam_role.httpapi.arn
   name                              = "authorize-http"
   authorizer_result_ttl_in_seconds  = 0 # we need to configure an identity source for caching. But we want the auth token to be optional - and that is not possible with identity source.

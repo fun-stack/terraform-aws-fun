@@ -64,6 +64,16 @@ resource "aws_cognito_user_pool_client" "website_client" {
   callback_urls = var.redirect_urls
 }
 
+resource "aws_cognito_user_pool_ui_customization" "hosted_ui" {
+  count     = var.css_file != null || var.image_file != null ? 1 : 0
+  client_id = aws_cognito_user_pool_client.website_client.id
+
+  css        = var.css_file == null ? null : file(var.css_file) //".label-customizable {font-weight: 400;}"
+  image_file = var.image_file == null ? null : filebase64(var.image_file)
+
+  user_pool_id = aws_cognito_user_pool_domain.user.user_pool_id
+}
+
 resource "random_pet" "domain_name" {
   count     = var.domain == null ? 1 : 0
   separator = "-"

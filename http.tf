@@ -3,44 +3,63 @@ module "http" {
   source = "./http"
 
   prefix                = local.prefix
+  log_retention_in_days = local.logging.retention_in_days
+
   domain                = local.domain_http
   allow_origins         = local.redirect_urls
-  hosted_zone_id        = concat(data.aws_route53_zone.domain[*].zone_id, [null])[0]
-  auth_module           = concat(module.auth, [null])[0]
+  hosted_zone_id        = one(data.aws_route53_zone.domain[*].zone_id)
+  auth_module           = one(module.auth)
   allow_unauthenticated = local.http.allow_unauthenticated
 
-  source_dir    = local.http.source_dir
-  source_bucket = local.http.source_bucket
-  timeout       = local.http.timeout
-  memory_size   = local.http.memory_size
-  runtime       = local.http.runtime
-  handler       = local.http.handler
+  api = lookup(local.http, "api", null) == null ? null : merge(local.http.api, {
+    environment = merge(
+      local.http.api.environment == null ? {} : local.http.api.environment,
+      length(module.ws) == 0 ? {} : {
+        FUN_EVENTS_SNS_OUTPUT_TOPIC = module.ws[0].event_topic
+      },
+      length(module.auth) == 0 ? {} : {
+        FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
+      }
+    )
+  })
 
-  environment = merge(
-    local.http.environment == null ? {} : local.http.environment,
-    length(module.ws) == 0 ? {} : {
-      FUN_WEBSOCKET_CONNECTIONS_DYNAMODB_TABLE = module.ws[0].connections_table
-      FUN_WEBSOCKET_API_GATEWAY_ENDPOINT       = replace(module.ws[0].url, "wss://", "")
-    },
-    length(module.auth) == 0 ? {} : {
-      FUN_AUTH_COGNITO_POOL_ID = module.auth[0].user_pool.id
-    }
-  )
+  rpc = lookup(local.http, "rpc", null) == null ? null : merge(local.http.rpc, {
+    environment = merge(
+      local.http.rpc.environment == null ? {} : local.http.rpc.environment,
+      length(module.ws) == 0 ? {} : {
+        FUN_EVENTS_SNS_OUTPUT_TOPIC = module.ws[0].event_topic
+      },
+      length(module.auth) == 0 ? {} : {
+        FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
+      }
+    )
+  })
 
   providers = {
-    aws    = aws
-    aws.us = aws.us
+    aws = aws
   }
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_http_ws_connections" {
-  count      = length(module.ws) == 0 || length(module.http) == 0 ? 0 : 1
-  role       = module.http[0].http_role.name
-  policy_arn = module.ws[0].connections_policy_arn
+resource "aws_iam_role_policy_attachment" "lambda_http_api_events" {
+  count      = length(module.ws) > 0 && length(module.http) > 0 ? (module.http[0].api_role != null ? 1 : 0) : 0
+  role       = module.http[count.index].api_role.name
+  policy_arn = module.ws[0].event_policy_arn
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_http_auth_get_info" {
-  count      = module.auth == null || module.http == null ? 0 : 1
-  role       = module.http[0].http_role.name
+resource "aws_iam_role_policy_attachment" "lambda_http_api_auth_get_info" {
+  count      = length(module.auth) > 0 && length(module.http) > 0 ? (module.http[0].api_role != null ? 1 : 0) : 0
+  role       = module.http[count.index].api_role.name
+  policy_arn = module.auth[0].get_info_policy_arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_http_rpc_events" {
+  count      = length(module.ws) > 0 && length(module.http) > 0 ? (module.http[0].rpc_role != null ? 1 : 0) : 0
+  role       = module.http[count.index].rpc_role.name
+  policy_arn = module.ws[0].event_policy_arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_http_rpc_auth_get_info" {
+  count      = length(module.auth) > 0 && length(module.http) > 0 ? (module.http[0].rpc_role != null ? 1 : 0) : 0
+  role       = module.http[count.index].rpc_role.name
   policy_arn = module.auth[0].get_info_policy_arn
 }

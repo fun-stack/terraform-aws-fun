@@ -1,3 +1,3 @@
-output "lambda" {
-  value = aws_lambda_function.authorizer
+output "function" {
+  value = module.lambda.function
 }

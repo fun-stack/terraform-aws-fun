@@ -1,9 +1,9 @@
-output "ws_role" {
-  value = concat(module.ws[*].ws_role, [null])[0]
+output "ws_rpc_role" {
+  value = one(module.ws[*].rpc_role)
 }
 
-output "http_role" {
-  value = concat(module.http[*].http_role, [null])[0]
+output "http_api_role" {
+  value = one(module.http[*].api_role)
 }
 
 output "prefix" {
@@ -27,9 +27,9 @@ output "url_auth" {
 }
 
 output "hosted_zone_id" {
-  value = concat(data.aws_route53_zone.domain[*].zone_id, [null])[0]
+  value = one(data.aws_route53_zone.domain[*].zone_id)
 }
 
 output "app_config" {
-  value = local.app_config_js_filename
+  value = local.app_config_js
 }

@@ -1,31 +1,67 @@
-resource "aws_iam_policy" "websocket_connections" {
-  name = "${local.prefix}-connections"
+resource "aws_iam_role" "websocket" {
+  name = "${local.prefix}-api"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "apigateway.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "websocket" {
+  role = aws_iam_role.websocket.name
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ],
+        Resource = [
+          aws_dynamodb_table.websocket_subscriptions.arn
+        ]
+      },
+      {
+        Action = [
+          "sns:publish",
+        ]
+        Effect = "Allow"
+        Resource = [
+          aws_sns_topic.connection_deletion.arn
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "lambda:InvokeFunction"
+        ],
+        Resource = concat(module.lambda_rpc[*].function.arn, module.authorizer[*].function.arn)
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "subscription_events" {
+  name = "${local.prefix}-subscription-events"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action = [
-          "dynamodb:GetItem",
-          "dynamodb:BatchGetItem",
-          "dynamodb:Scan",
-          "dynamodb:Query",
-          "dynamodb:ConditionCheckItem"
+          "sns:publish",
         ]
         Effect = "Allow"
         Resource = [
-          aws_dynamodb_table.websocket_connections.arn,
-          "${aws_dynamodb_table.websocket_connections.arn}/index/${local.websocket_connections_index_name}"
-        ]
-      },
-      {
-        Action = [
-          "execute-api:Invoke",
-          "execute-api:ManageConnections"
-        ]
-        Effect = "Allow"
-        Resource = [
-          "${aws_apigatewayv2_api.websocket.execution_arn}/*"
+          aws_sns_topic.subscription_events.arn
         ]
       },
     ]

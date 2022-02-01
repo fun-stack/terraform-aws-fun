@@ -1,7 +1,8 @@
-resource "aws_dynamodb_table" "websocket_connections" {
-  name         = "${local.prefix}-connections"
+resource "aws_dynamodb_table" "websocket_subscriptions" {
+  name         = "${local.prefix}-subscriptions"
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "connection_id"
+  hash_key     = "subscription_key"
+  range_key    = "connection_id"
 
   attribute {
     name = "connection_id"
@@ -9,7 +10,7 @@ resource "aws_dynamodb_table" "websocket_connections" {
   }
 
   attribute {
-    name = "user_id"
+    name = "subscription_key"
     type = "S"
   }
 
@@ -19,9 +20,9 @@ resource "aws_dynamodb_table" "websocket_connections" {
   }
 
   global_secondary_index {
-    name            = local.websocket_connections_index_name
-    hash_key        = "user_id"
-    range_key       = "connection_id"
-    projection_type = "ALL"
+    name            = "connection_id"
+    hash_key        = "connection_id"
+    range_key       = "subscription_key"
+    projection_type = "KEYS_ONLY"
   }
 }

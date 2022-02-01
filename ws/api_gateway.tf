@@ -1,30 +1,34 @@
 resource "aws_apigatewayv2_api" "websocket" {
   name                       = local.prefix
   protocol_type              = "WEBSOCKET"
-  route_selection_expression = "$request.body.action"
+  route_selection_expression = "$request.body.__action"
 }
 
 resource "aws_apigatewayv2_route" "websocket_default" {
+  count     = length(module.lambda_rpc) > 0 ? 1 : 0
   api_id    = aws_apigatewayv2_api.websocket.id
   route_key = "$default"
 
-  target = "integrations/${aws_apigatewayv2_integration.websocket_default.id}"
+  target = "integrations/${aws_apigatewayv2_integration.websocket_default[0].id}"
 }
 resource "aws_apigatewayv2_integration" "websocket_default" {
+  count            = length(module.lambda_rpc) > 0 ? 1 : 0
   api_id           = aws_apigatewayv2_api.websocket.id
   integration_type = "AWS_PROXY"
   credentials_arn  = aws_iam_role.websocket.arn
-  integration_uri  = aws_lambda_function.ws.invoke_arn
+  integration_uri  = module.lambda_rpc[0].function.invoke_arn
   # content_handling_strategy = "CONVERT_TO_BINARY"
 }
 resource "aws_apigatewayv2_integration_response" "websocket_default" {
+  count                    = length(module.lambda_rpc) > 0 ? 1 : 0
   api_id                   = aws_apigatewayv2_api.websocket.id
-  integration_id           = aws_apigatewayv2_integration.websocket_default.id
+  integration_id           = aws_apigatewayv2_integration.websocket_default[0].id
   integration_response_key = "/200/"
 }
 resource "aws_apigatewayv2_route_response" "websocket_default" {
+  count              = length(module.lambda_rpc) > 0 ? 1 : 0
   api_id             = aws_apigatewayv2_api.websocket.id
-  route_id           = aws_apigatewayv2_route.websocket_default.id
+  route_id           = aws_apigatewayv2_route.websocket_default[0].id
   route_response_key = "$default"
 }
 
@@ -33,21 +37,51 @@ resource "aws_apigatewayv2_route" "websocket_connect" {
   route_key          = "$connect"
   authorization_type = length(aws_apigatewayv2_authorizer.websocket) > 0 ? "CUSTOM" : null
   authorizer_id      = length(aws_apigatewayv2_authorizer.websocket) > 0 ? aws_apigatewayv2_authorizer.websocket[0].id : null
-
-  target = "integrations/${aws_apigatewayv2_integration.websocket_connect.id}"
 }
-resource "aws_apigatewayv2_integration" "websocket_connect" {
+
+resource "aws_apigatewayv2_route" "websocket_disconnect" {
+  api_id    = aws_apigatewayv2_api.websocket.id
+  route_key = "$disconnect"
+
+  target = "integrations/${aws_apigatewayv2_integration.websocket_disconnect.id}"
+}
+
+resource "aws_apigatewayv2_integration" "websocket_disconnect" {
+  api_id             = aws_apigatewayv2_api.websocket.id
+  integration_type   = "AWS"
+  integration_method = "POST"
+  integration_uri    = "arn:aws:apigateway:${data.aws_region.current.name}:sns:action/Publish"
+  credentials_arn    = aws_iam_role.websocket.arn
+
+  request_parameters = {
+    "integration.request.querystring.TopicArn" = "'${aws_sns_topic.connection_deletion.id}'"
+    "integration.request.querystring.Message"  = "context.connectionId"
+  }
+}
+
+resource "aws_apigatewayv2_route" "websocket_subscribe" {
+  api_id    = aws_apigatewayv2_api.websocket.id
+  route_key = "subscribe"
+
+  target = "integrations/${aws_apigatewayv2_integration.websocket_subscribe.id}"
+}
+
+resource "aws_apigatewayv2_integration" "websocket_subscribe" {
   api_id             = aws_apigatewayv2_api.websocket.id
   integration_type   = "AWS"
   integration_method = "POST"
   integration_uri    = "arn:aws:apigateway:${data.aws_region.current.name}:dynamodb:action/PutItem"
   credentials_arn    = aws_iam_role.websocket.arn
 
-  # ttl after 9000 secs = 2.5 hours, because of connection duration on api gateway: https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html
+  # ttl after 9000 secs = 2.5 hours, because of max connection duration of 2 hours on api gateway: https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html
+  # To cleanup if disconnect is not called - because AWS only promises best-effort for disconnect.
   request_templates = {
     "application/json" = <<EOF
 {
     "Item": {
+      "subscription_key": {
+        "S": "$input.path('$.subscription_key')"
+      },
       "connection_id": {
         "S": "$context.connectionId"
       },
@@ -61,29 +95,20 @@ resource "aws_apigatewayv2_integration" "websocket_connect" {
         "N": "$delete_connection_at"
       }
     },
-    "TableName": "${aws_dynamodb_table.websocket_connections.name}"
+    "TableName": "${aws_dynamodb_table.websocket_subscriptions.name}"
 }
 EOF
   }
 }
-resource "aws_apigatewayv2_integration_response" "websocket_connect" {
-  api_id                   = aws_apigatewayv2_api.websocket.id
-  integration_id           = aws_apigatewayv2_integration.websocket_connect.id
-  integration_response_key = "/200/"
-}
-resource "aws_apigatewayv2_route_response" "websocket_connect" {
-  api_id             = aws_apigatewayv2_api.websocket.id
-  route_id           = aws_apigatewayv2_route.websocket_connect.id
-  route_response_key = "$default"
-}
 
-resource "aws_apigatewayv2_route" "websocket_disconnect" {
+resource "aws_apigatewayv2_route" "websocket_unsubscribe" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "$disconnect"
+  route_key = "unsubscribe"
 
-  target = "integrations/${aws_apigatewayv2_integration.websocket_disconnect.id}"
+  target = "integrations/${aws_apigatewayv2_integration.websocket_unsubscribe.id}"
 }
-resource "aws_apigatewayv2_integration" "websocket_disconnect" {
+
+resource "aws_apigatewayv2_integration" "websocket_unsubscribe" {
   api_id             = aws_apigatewayv2_api.websocket.id
   integration_type   = "AWS"
   integration_method = "POST"
@@ -96,74 +121,15 @@ resource "aws_apigatewayv2_integration" "websocket_disconnect" {
     "Key": {
       "connection_id": {
         "S": "$context.connectionId"
+      },
+      "subscription_key": {
+        "S": "$input.json('$.subscription_key')"
       }
     },
-    "TableName": "${aws_dynamodb_table.websocket_connections.name}"
+    "TableName": "${aws_dynamodb_table.websocket_subscriptions.name}"
 }
 EOF
   }
-}
-resource "aws_apigatewayv2_integration_response" "websocket_disconnect" {
-  api_id                   = aws_apigatewayv2_api.websocket.id
-  integration_id           = aws_apigatewayv2_integration.websocket_disconnect.id
-  integration_response_key = "/200/"
-}
-resource "aws_apigatewayv2_route_response" "websocket_disconnect" {
-  api_id             = aws_apigatewayv2_api.websocket.id
-  route_id           = aws_apigatewayv2_route.websocket_disconnect.id
-  route_response_key = "$default"
-}
-
-resource "aws_iam_role" "websocket" {
-  name               = "${local.prefix}-api"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "apigateway.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy" "websocket" {
-  role = aws_iam_role.websocket.name
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:PutItem",
-                "dynamodb:DeleteItem"
-            ],
-            "Resource": [
-              "${aws_dynamodb_table.websocket_connections.arn}"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "lambda:InvokeFunction"
-            ],
-            "Resource": ${jsonencode(concat(
-  [aws_lambda_function.ws.arn],
-  var.auth_module == null ? [] : [
-    module.authorizer[0].lambda.arn,
-    module.authorizer[0].lambda.invoke_arn
-  ]
-))}
-        }
-    ]
-}
-EOF
 }
 
 resource "aws_apigatewayv2_api_mapping" "websocket" {
@@ -182,6 +148,7 @@ resource "aws_apigatewayv2_stage" "websocket" {
     # data_trace_enabled       = true
     # detailed_metrics_enabled = true
     # logging_level            = "INFO"
+    # TODO configure?
     throttling_rate_limit  = 100
     throttling_burst_limit = 50
   }
@@ -215,7 +182,7 @@ resource "aws_apigatewayv2_authorizer" "websocket" {
 
   api_id                     = aws_apigatewayv2_api.websocket.id
   authorizer_type            = "REQUEST"
-  authorizer_uri             = module.authorizer[0].lambda.invoke_arn
+  authorizer_uri             = module.authorizer[0].function.invoke_arn
   authorizer_credentials_arn = aws_iam_role.websocket.arn
   name                       = "authorize-websocket"
 }

@@ -2,6 +2,10 @@ variable "prefix" {
   type = string
 }
 
+variable "log_retention_in_days" {
+  type = number
+}
+
 variable "auth_module" {
   type = any
 }
@@ -18,32 +22,28 @@ variable "hosted_zone_id" {
   type = string
 }
 
-variable "source_dir" {
-  type = string
+variable "api" {
+  type = object({
+    source_dir    = string
+    source_bucket = optional(string)
+    handler       = string
+    runtime       = string
+    timeout       = number
+    memory_size   = number
+    environment   = optional(map(string))
+  })
 }
 
-variable "source_bucket" {
-  type = string
-}
-
-variable "timeout" {
-  type = number
-}
-
-variable "memory_size" {
-  type = number
-}
-
-variable "runtime" {
-  type = string
-}
-
-variable "handler" {
-  type = string
-}
-
-variable "environment" {
-  type = map(string)
+variable "rpc" {
+  type = object({
+    source_dir    = string
+    source_bucket = optional(string)
+    handler       = string
+    runtime       = string
+    timeout       = number
+    memory_size   = number
+    environment   = optional(map(string))
+  })
 }
 
 variable "allow_unauthenticated" {
@@ -51,7 +51,6 @@ variable "allow_unauthenticated" {
 }
 
 locals {
-  module_name   = basename(abspath(path.module))
-  prefix        = "${var.prefix}-${local.module_name}"
-  http_zip_file = "${path.module}/${local.prefix}.zip"
+  module_name = basename(abspath(path.module))
+  prefix      = "${var.prefix}-${local.module_name}"
 }

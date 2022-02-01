@@ -2,6 +2,10 @@ variable "prefix" {
   type = string
 }
 
+variable "log_retention_in_days" {
+  type = number
+}
+
 variable "cognito_user_pool_id" {
   type = string
 }
@@ -23,7 +27,6 @@ variable "allow_unauthenticated" {
 }
 
 locals {
-  module_name         = basename(abspath(path.module))
-  prefix              = "${var.prefix}-${local.module_name}"
-  authorizer_zip_file = "${path.module}/${local.prefix}.zip"
+  module_name = basename(abspath(path.module))
+  prefix      = "${var.prefix}-${local.module_name}"
 }

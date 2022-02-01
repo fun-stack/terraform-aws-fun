@@ -3,33 +3,44 @@ module "ws" {
   source = "./ws"
 
   prefix                = local.prefix
+  log_retention_in_days = local.logging.retention_in_days
+
   domain                = local.domain_ws
-  hosted_zone_id        = concat(data.aws_route53_zone.domain[*].zone_id, [null])[0]
-  auth_module           = concat(module.auth, [null])[0]
+  hosted_zone_id        = one(data.aws_route53_zone.domain[*].zone_id)
+  auth_module           = one(module.auth)
   allow_unauthenticated = local.ws.allow_unauthenticated
 
-  source_dir    = local.ws.source_dir
-  source_bucket = local.ws.source_bucket
-  timeout       = local.ws.timeout
-  memory_size   = local.ws.memory_size
-  runtime       = local.ws.runtime
-  handler       = local.ws.handler
+  rpc = lookup(local.ws, "rpc", null) == null ? null : merge(local.ws.rpc, {
+    environment = merge(
+      local.ws.rpc.environment == null ? {} : local.ws.rpc.environment,
+      length(module.auth) == 0 ? {} : {
+        FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
+      }
+    )
+  })
 
-  environment = merge(
-    local.ws.environment == null ? {} : local.ws.environment,
-    module.auth == null ? {} : {
-      FUN_AUTH_COGNITO_POOL_ID = module.auth[0].user_pool.id
-    }
-  )
+  event_authorizer = lookup(local.ws, "event_authorizer", null) == null ? null : merge(local.ws.event_authorizer, {
+    environment = merge(
+      local.ws.event_authorizer.environment == null ? {} : local.ws.event_authorizer.environment,
+      length(module.auth) == 0 ? {} : {
+        FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
+      }
+    )
+  })
 
   providers = {
-    aws    = aws
-    aws.us = aws.us
+    aws = aws
   }
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_ws_auth_get_info" {
-  count      = module.auth == null || module.ws == null ? 0 : 1
-  role       = module.ws[0].ws_role.name
+resource "aws_iam_role_policy_attachment" "lambda_ws_rpc_auth_get_info" {
+  count      = length(module.auth) > 0 && length(module.ws) > 0 ? (module.ws[0].rpc_role != null ? 1 : 0) : 0
+  role       = module.ws[0].rpc_role.name
+  policy_arn = module.auth[0].get_info_policy_arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_ws_event_authorizer_auth_get_info" {
+  count      = length(module.auth) > 0 && length(module.ws) > 0 ? (module.ws[0].event_authorizer_role != null ? 1 : 0) : 0
+  role       = module.ws[0].event_authorizer_role.name
   policy_arn = module.auth[0].get_info_policy_arn
 }

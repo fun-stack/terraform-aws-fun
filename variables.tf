@@ -18,6 +18,13 @@ variable "domain" {
   default = null
 }
 
+variable "logging" {
+  type = object({
+    retention_in_days = optional(number)
+  })
+  default = {}
+}
+
 variable "dev_setup" {
   type = object({
     enabled           = optional(bool)
@@ -29,6 +36,8 @@ variable "dev_setup" {
 variable "auth" {
   description = "auth module with cognito"
   type = object({
+    css_file   = optional(string)
+    image_file = optional(string)
   })
   default = null
 }
@@ -45,34 +54,61 @@ variable "website" {
     environment         = optional(map(string))
     rewrites            = optional(map(string))
   })
-}
-
-variable "ws" {
-  description = "ws module with api gateway websockets"
-  type = object({
-    source_dir            = string
-    source_bucket         = optional(string)
-    handler               = string
-    runtime               = string
-    timeout               = number
-    memory_size           = number
-    allow_unauthenticated = optional(bool)
-    environment           = optional(map(string))
-  })
   default = null
 }
 
 variable "http" {
   description = "http module with api gateway http"
   type = object({
-    source_dir            = string
-    source_bucket         = optional(string)
-    handler               = string
-    runtime               = string
-    timeout               = number
-    memory_size           = number
     allow_unauthenticated = optional(bool)
-    environment           = optional(map(string))
+
+    api = optional(object({
+      source_dir    = string
+      source_bucket = optional(string)
+      handler       = string
+      runtime       = string
+      timeout       = optional(number)
+      memory_size   = number
+      environment   = optional(map(string))
+    }))
+
+    rpc = optional(object({
+      source_dir    = string
+      source_bucket = optional(string)
+      handler       = string
+      runtime       = string
+      timeout       = optional(number)
+      memory_size   = number
+      environment   = optional(map(string))
+    }))
+  })
+  default = null
+}
+
+variable "ws" {
+  description = "ws module with api gateway websocket"
+  type = object({
+    allow_unauthenticated = optional(bool)
+
+    rpc = optional(object({
+      source_dir    = string
+      source_bucket = optional(string)
+      handler       = string
+      runtime       = string
+      timeout       = optional(number)
+      memory_size   = number
+      environment   = optional(map(string))
+    }))
+
+    event_authorizer = optional(object({
+      source_dir    = string
+      source_bucket = optional(string)
+      handler       = string
+      runtime       = string
+      timeout       = optional(number)
+      memory_size   = number
+      environment   = optional(map(string))
+    }))
   })
   default = null
 }
@@ -89,6 +125,10 @@ variable "budget" {
 locals {
   module_name = replace(basename(abspath(path.module)), "_", "-")
 
+  logging = defaults(var.logging, {
+    retention_in_days = 3
+  })
+
   dev_setup = defaults(var.dev_setup, {
     enabled = true
   })
@@ -102,10 +142,22 @@ locals {
 
   ws = var.ws == null ? null : defaults(var.ws, {
     allow_unauthenticated = true
+    event_authorizer = {
+      timeout = 5
+    }
+    rpc = {
+      timeout = 30
+    }
   })
 
   http = var.http == null ? null : defaults(var.http, {
     allow_unauthenticated = true
+    api = {
+      timeout = 30
+    }
+    rpc = {
+      timeout = 30
+    }
   })
 
   auth = var.auth == null ? null : defaults(var.auth, {
@@ -119,26 +171,25 @@ locals {
   domain_ws      = local.domain == null ? null : "ws.${local.domain}"
   domain_http    = local.domain == null ? null : "api.${local.domain}"
 
-  url_website = coalesce(local.domain == null ? null : "https://${local.domain}", "https://${aws_cloudfront_distribution.website.domain_name}")
-  url_auth    = length(module.auth) > 0 ? coalesce(local.domain_auth == null ? null : "https://${local.domain_auth}", module.auth[0].url) : null
-  url_ws      = length(module.ws) > 0 ? coalesce(local.domain_ws == null ? null : "wss://${local.domain_ws}", module.ws[0].url) : null
-  url_http    = length(module.http) > 0 ? coalesce(local.domain_http == null ? null : "https://${local.domain_http}", module.http[0].url) : null
+  url_website = length(module.website) > 0 ? (local.domain == null ? module.website[0].url : "https://${local.domain_auth}") : null
+  url_auth    = length(module.auth) > 0 ? (local.domain_auth == null ? module.auth[0].url : "https://${local.domain_auth}") : null
+  url_ws      = length(module.ws) > 0 ? (local.domain_ws == null ? module.ws[0].url : "wss://${local.domain_ws}") : null
+  url_http    = length(module.http) > 0 ? (local.domain_http == null ? module.http[0].url : "https://${local.domain_http}") : null
 
   redirect_urls = concat(
     [local.url_website],
     local.dev_setup.enabled && local.dev_setup.local_website_url != null ? [local.dev_setup.local_website_url] : []
   )
 
-  # wget --output-document mime.json https://raw.githubusercontent.com/micnic/mime.json/master/index.json
-  content_type_map = jsondecode(file("${path.module}/mime.json"))
-
   app_config = {
-    stage  = var.stage,
-    region = data.aws_region.current.name,
+    stage = var.stage,
+  }
+
+  app_config_website = local.website == null ? {} : {
     website = {
-      url = local.url_website
+      url         = local.url_website
+      environment = local.website.environment == null ? {} : local.website.environment
     }
-    environment = local.website.environment == null ? {} : local.website.environment
   }
 
   app_config_ws = local.ws == null ? {} : {
@@ -163,8 +214,6 @@ locals {
   }
 
   app_config_js = <<EOF
-window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_ws, local.app_config_http, local.app_config_auth))};
+window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_website, local.app_config_ws, local.app_config_http, local.app_config_auth))};
 EOF
-
-  app_config_js_filename = "${path.module}/serve/app_config.js"
 }

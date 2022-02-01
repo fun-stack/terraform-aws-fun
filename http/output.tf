@@ -1,7 +1,11 @@
-output "http_role" {
-  value = aws_iam_role.lambda_http
+output "api_role" {
+  value = one(module.lambda_api[*].role)
+}
+
+output "rpc_role" {
+  value = one(module.lambda_rpc[*].role)
 }
 
 output "url" {
-  value = "${aws_apigatewayv2_api.httpapi.api_endpoint}/latest"
+  value = "${aws_apigatewayv2_api.httpapi.api_endpoint}/latest/"
 }

@@ -1,59 +1,24 @@
-data "archive_file" "ws" {
-  type        = "zip"
-  source_dir  = var.source_dir
-  output_path = local.ws_zip_file
+module "lambda_rpc" {
+  count  = var.rpc == null ? 0 : 1
+  source = "../lambda"
+
+  prefix                = "${local.prefix}-rpc"
+  log_retention_in_days = var.log_retention_in_days
+
+  source_bucket = var.rpc.source_bucket
+  source_dir    = var.rpc.source_dir
+  timeout       = var.rpc.timeout
+  memory_size   = var.rpc.memory_size
+  runtime       = var.rpc.runtime
+  handler       = var.rpc.handler
+
+  environment = merge(var.rpc.environment == null ? {} : var.rpc.environment, {
+    FUN_EVENTS_SNS_OUTPUT_TOPIC = aws_sns_topic.subscription_events.id
+  })
 }
 
-resource "aws_cloudwatch_log_group" "lambda_ws" {
-  name              = "/aws/lambda/${local.prefix}"
-  retention_in_days = 3
-}
-
-resource "aws_lambda_function" "ws" {
-  function_name = local.prefix
-  role          = aws_iam_role.lambda_ws.arn
-
-  timeout     = var.timeout
-  memory_size = var.memory_size
-  publish     = true
-
-  runtime          = var.runtime
-  handler          = var.handler
-  filename         = local.ws_zip_file
-  source_code_hash = data.archive_file.ws.output_base64sha256
-
-  environment {
-    variables = merge(var.environment == null ? {} : var.environment, {
-      FUN_WEBSOCKET_CONNECTIONS_DYNAMODB_TABLE = aws_dynamodb_table.websocket_connections.id
-      FUN_WEBSOCKET_API_GATEWAY_ENDPOINT       = replace(local.api_gateway_url, "wss://", "")
-    })
-  }
-}
-
-resource "aws_iam_role" "lambda_ws" {
-  name               = "${local.prefix}-lambda"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_ws" {
-  role       = aws_iam_role.lambda_ws.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_ws_connections" {
-  role       = aws_iam_role.lambda_ws.name
-  policy_arn = aws_iam_policy.websocket_connections.arn
+resource "aws_iam_role_policy_attachment" "lambda_rpc_events" {
+  count      = length(module.lambda_rpc) > 0 ? 1 : 0
+  role       = module.lambda_rpc[0].role.name
+  policy_arn = aws_iam_policy.subscription_events.arn
 }
