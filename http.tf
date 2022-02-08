@@ -16,7 +16,7 @@ module "http" {
   runtime       = local.http.runtime
   handler       = local.http.handler
 
-  environment = module.ws == null ? local.http.environment : merge(local.http.environment == null ? {} : local.http.environment, {
+  environment = length(module.ws) == 0 ? local.http.environment : merge(local.http.environment == null ? {} : local.http.environment, {
     FUN_WEBSOCKET_CONNECTIONS_DYNAMODB_TABLE = module.ws[0].connections_table
     FUN_WEBSOCKET_API_GATEWAY_ENDPOINT       = replace(module.ws[0].url, "wss://", "")
   })
@@ -29,7 +29,7 @@ module "http" {
 
 
 resource "aws_iam_role_policy_attachment" "lambda_http_ws_connections" {
-  count      = module.ws == null || module.http == null ? 0 : 1
+  count      = length(module.ws) == 0 || length(module.http) == 0 ? 0 : 1
   role       = module.http[0].http_role.name
   policy_arn = module.ws[0].connections_policy_arn
 }
