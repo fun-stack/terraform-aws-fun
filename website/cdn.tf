@@ -87,6 +87,8 @@ resource "aws_cloudfront_distribution" "website" {
       function_arn = aws_cloudfront_function.redirect_function.arn
     }
 
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
+
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
@@ -101,6 +103,70 @@ resource "aws_cloudfront_distribution" "website" {
   }
 
   wait_for_deployment = true
+}
+
+resource "aws_cloudfront_response_headers_policy" "security_headers" {
+  name = "${local.prefix}-security-headers"
+
+  security_headers_config {
+    dynamic "content_security_policy" {
+      for_each = var.content_security_policy == null ? [] : ["0"]
+      content {
+        content_security_policy = var.content_security_policy
+        override                = true
+      }
+    }
+    content_type_options {
+      override = true
+    }
+    frame_options {
+      override     = true
+      frame_option = "DENY"
+    }
+    referrer_policy {
+      override        = true
+      referrer_policy = "no-referrer"
+    }
+    strict_transport_security {
+      override                   = true
+      access_control_max_age_sec = 63072000
+      include_subdomains         = true
+      preload                    = false
+    }
+    xss_protection {
+      override   = true
+      mode_block = true
+      protection = true
+    }
+  }
+  # custom_headers_config {
+  #   items {
+  #     header   = "X-Content-Type-Options"
+  #     override = true
+  #     value    = "nosniff"
+  #   }
+
+  #   items {
+  #     header   = "Strict-Transport-Security"
+  #     override = true
+  #     value    = "max-age=63072000; includeSubDomains"
+  #   }
+
+  #   items {
+  #     header   = "X-Frame-Options"
+  #     override = true
+  #     value    = "deny"
+  #   }
+
+  #   dynamic "items" {
+  #     for_each = var.content_security_policy == null ? [] : ["0"]
+  #     content {
+  #       header   = "Content-Security-Policy"
+  #       override = true
+  #       value    = var.content_security_policy
+  #     }
+  #   }
+  # }
 }
 
 resource "aws_cloudfront_function" "redirect_function" {

@@ -53,6 +53,7 @@ variable "website" {
     cache_files_max_age = optional(number)
     environment         = optional(map(string))
     rewrites            = optional(map(string))
+    content_security_policy = optional(string)
   })
   default = null
 }
@@ -138,6 +139,7 @@ locals {
     error_file          = "error.html"
     cache_files_regex   = ""
     cache_files_max_age = 31536000
+    content_security_policy = "default-src 'self'; font-src https://*; img-src https://*; style-src https://*"
   })
 
   ws = var.ws == null ? null : defaults(var.ws, {

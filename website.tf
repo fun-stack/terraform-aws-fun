@@ -7,6 +7,8 @@ module "website" {
   domain         = local.domain_website
   hosted_zone_id = one(data.aws_route53_zone.domain[*].zone_id)
 
+  content_security_policy = local.website.content_security_policy
+
   source_dir          = local.website.source_dir
   source_bucket       = local.website.source_bucket
   index_file          = local.website.index_file

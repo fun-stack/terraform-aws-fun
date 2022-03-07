@@ -6,6 +6,10 @@ variable "domain" {
   type = string
 }
 
+variable "content_security_policy" {
+  type = string
+}
+
 variable "hosted_zone_id" {
   type = string
 }
