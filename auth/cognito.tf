@@ -25,7 +25,7 @@ resource "aws_cognito_user_pool" "user" {
   }
 }
 resource "aws_cognito_resource_server" "user" {
-  name         = "${local.prefix}-user-ws"
+  name         = "${local.prefix}-user"
   identifier   = "${local.prefix}-api"
   user_pool_id = aws_cognito_user_pool.user.id
 
@@ -41,7 +41,6 @@ resource "aws_cognito_user_pool_client" "website_client" {
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_flows = [
     "code",
-    "implicit",
   ]
   allowed_oauth_scopes = concat(
     aws_cognito_resource_server.user.scope_identifiers,
@@ -60,7 +59,7 @@ resource "aws_cognito_user_pool_client" "website_client" {
   supported_identity_providers = [
     "COGNITO",
   ]
-  logout_urls   = var.redirect_urls
+  logout_urls   = [for url in var.redirect_urls : "${url}?logout"]
   callback_urls = var.redirect_urls
 }
 
