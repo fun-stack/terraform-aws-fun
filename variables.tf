@@ -45,14 +45,14 @@ variable "auth" {
 variable "website" {
   description = "website module with cloudfront and s3"
   type = object({
-    source_dir          = string
-    source_bucket       = optional(string)
-    index_file          = optional(string)
-    error_file          = optional(string)
-    cache_files_regex   = optional(string)
-    cache_files_max_age = optional(number)
-    environment         = optional(map(string))
-    rewrites            = optional(map(string))
+    source_dir              = string
+    source_bucket           = optional(string)
+    index_file              = optional(string)
+    error_file              = optional(string)
+    cache_files_regex       = optional(string)
+    cache_files_max_age     = optional(number)
+    environment             = optional(map(string))
+    rewrites                = optional(map(string))
     content_security_policy = optional(string)
   })
   default = null
@@ -135,10 +135,10 @@ locals {
   })
 
   website = var.website == null ? null : defaults(var.website, {
-    index_file          = "index.html"
-    error_file          = "error.html"
-    cache_files_regex   = ""
-    cache_files_max_age = 31536000
+    index_file              = "index.html"
+    error_file              = "error.html"
+    cache_files_regex       = ""
+    cache_files_max_age     = 31536000
     content_security_policy = "default-src 'self'; font-src https://*; img-src https://*; style-src https://*"
   })
 
@@ -182,40 +182,4 @@ locals {
     [local.url_website],
     local.dev_setup.enabled && local.dev_setup.local_website_url != null ? [local.dev_setup.local_website_url] : []
   )
-
-  app_config = {
-    stage = var.stage,
-  }
-
-  app_config_website = local.website == null ? {} : {
-    website = {
-      url         = local.url_website
-      environment = local.website.environment == null ? {} : local.website.environment
-    }
-  }
-
-  app_config_ws = local.ws == null ? {} : {
-    ws = {
-      url                  = local.url_ws
-      allowUnauthenticated = local.ws.allow_unauthenticated
-    }
-  }
-
-  app_config_http = local.http == null ? {} : {
-    http = {
-      url                  = local.url_http
-      allowUnauthenticated = local.http.allow_unauthenticated
-    }
-  }
-
-  app_config_auth = local.auth == null ? {} : {
-    auth = {
-      url      = local.url_auth
-      clientId = module.auth[0].user_pool_client.id
-    }
-  }
-
-  app_config_js = <<EOF
-window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_website, local.app_config_ws, local.app_config_http, local.app_config_auth))};
-EOF
 }
