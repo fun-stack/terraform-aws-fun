@@ -48,8 +48,8 @@ resource "aws_cognito_user_pool_client" "website_client" {
       "aws.cognito.signin.user.admin",
       "email",
       "openid",
-      "phone",
-      "profile",
+      # "phone",
+      # "profile",
     ]
   )
   explicit_auth_flows = [
