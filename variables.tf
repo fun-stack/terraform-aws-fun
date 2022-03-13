@@ -72,6 +72,10 @@ variable "http" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      secrets = optional(object({
+        ssm_parameter  = optional(map(string))
+        secretsmanager = optional(map(string))
+      }))
     }))
 
     rpc = optional(object({
@@ -82,6 +86,10 @@ variable "http" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      secrets = optional(object({
+        ssm_parameter  = optional(map(string))
+        secretsmanager = optional(map(string))
+      }))
     }))
   })
   default = null
@@ -100,6 +108,10 @@ variable "ws" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      secrets = optional(object({
+        ssm_parameter  = optional(map(string))
+        secretsmanager = optional(map(string))
+      }))
     }))
 
     event_authorizer = optional(object({
@@ -110,6 +122,10 @@ variable "ws" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      secrets = optional(object({
+        ssm_parameter  = optional(map(string))
+        secretsmanager = optional(map(string))
+      }))
     }))
   })
   default = null

@@ -27,6 +27,10 @@ variable "rpc" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    secrets = optional(object({
+      ssm_parameter  = map(string)
+      secretsmanager = map(string)
+    }))
   })
 }
 
@@ -43,6 +47,10 @@ variable "event_authorizer" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    secrets = optional(object({
+      ssm_parameter  = optional(map(string))
+      secretsmanager = optional(map(string))
+    }))
   })
 }
 

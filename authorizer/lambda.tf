@@ -16,4 +16,6 @@ module "lambda" {
     ALLOW_UNAUTHENTICATED = var.allow_unauthenticated
     IDENTITY_SOURCE       = var.identity_source
   }
+
+  secrets = null
 }

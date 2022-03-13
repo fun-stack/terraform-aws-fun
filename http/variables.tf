@@ -31,6 +31,10 @@ variable "api" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    secrets = optional(object({
+      ssm_parameter  = optional(map(string))
+      secretsmanager = optional(map(string))
+    }))
   })
 }
 
@@ -43,6 +47,10 @@ variable "rpc" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    secrets = optional(object({
+      ssm_parameter  = optional(map(string))
+      secretsmanager = optional(map(string))
+    }))
   })
 }
 

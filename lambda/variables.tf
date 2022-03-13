@@ -35,6 +35,13 @@ variable "environment" {
   type = map(string)
 }
 
+variable "secrets" {
+  type = object({
+    ssm_parameter  = optional(map(string))
+    secretsmanager = optional(map(string))
+  })
+}
+
 locals {
   module_name     = basename(abspath(path.module))
   prefix          = "${var.prefix}-${local.module_name}"

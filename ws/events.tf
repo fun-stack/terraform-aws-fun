@@ -62,6 +62,8 @@ module "lambda_event_expander" {
     SNS_INPUT_TOPIC            = aws_sns_topic.subscription_events.id
     SNS_OUTPUT_TOPIC           = aws_sns_topic.connection_events.id
   }
+
+  secrets = null
 }
 
 module "lambda_event_sender" {
@@ -79,6 +81,8 @@ module "lambda_event_sender" {
   environment = {
     API_GATEWAY_ENDPOINT = replace(local.api_gateway_url, "wss://", "")
   }
+
+  secrets = null
 }
 
 module "lambda_event_authorizer" {
@@ -97,6 +101,8 @@ module "lambda_event_authorizer" {
   environment = merge(var.event_authorizer.environment == null ? {} : var.event_authorizer.environment, {
     FUN_EVENTS_SNS_OUTPUT_TOPIC = aws_sns_topic.connection_events_authorized[0].id
   })
+
+  secrets = null
 }
 
 module "lambda_subscription_cleanup" {
@@ -115,6 +121,8 @@ module "lambda_subscription_cleanup" {
     DYNAMO_SUBSCRIPTIONS_TABLE = aws_dynamodb_table.websocket_subscriptions.id
     SNS_INPUT_TOPIC            = aws_sns_topic.connection_deletion.id
   }
+
+  secrets = null
 }
 
 // IAM

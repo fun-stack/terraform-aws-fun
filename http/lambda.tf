@@ -11,8 +11,8 @@ module "lambda_api" {
   memory_size   = var.api.memory_size
   runtime       = var.api.runtime
   handler       = var.api.handler
-
-  environment = var.api.environment
+  environment   = var.api.environment
+  secrets       = var.api.secrets
 }
 
 module "lambda_rpc" {
@@ -28,6 +28,6 @@ module "lambda_rpc" {
   memory_size   = var.rpc.memory_size
   runtime       = var.rpc.runtime
   handler       = var.rpc.handler
-
-  environment = var.rpc.environment
+  environment   = var.rpc.environment
+  secrets       = var.rpc.secrets
 }
