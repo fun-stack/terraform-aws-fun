@@ -139,7 +139,7 @@ locals {
     error_file              = "error.html"
     cache_files_regex       = ""
     cache_files_max_age     = 31536000
-    content_security_policy = "default-src 'self'; font-src https://*; img-src https://*; style-src https://*; connect-src https://*; frame-ancestors 'none'; frame-src 'none';"
+    content_security_policy = "default-src 'self'; font-src https://*; img-src https://*; style-src https://*; connect-src https://* wss://*; frame-ancestors 'none'; frame-src 'none';"
   })
 
   ws = var.ws == null ? null : defaults(var.ws, {
