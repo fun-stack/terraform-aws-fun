@@ -1,16 +1,19 @@
-# fun-stack
+# terraform-aws-fun
 
-Create an opionated app environment on AWS. With website, auth, and reactive api.
+Create an opionated fun-stack app environment on AWS. With website, auth, and reactive api.
 
 This repository contains reusable terraform modules to build this app.
 
-See Examples for how to use it:
-- Scala Project Template: [fun-stack-example](https://github.com/fun-stack/fun-stack-example)
+## Links
 
-Also see client-library for helpers in your language:
-- Scala Client Library: [fun-stack-scala](https://github.com/fun-stack/fun-stack-scala)
+Example on how to use it:
+- Fun Scala Template: [example](https://github.com/fun-stack/example)
 
-## What is it?
+SDK library to communicate with the infrastructure in your code:
+- Fun SDK Scala: [sdk-scala](https://github.com/fun-stack/sdk-scala)
+
+See local development module for mocking the AWS infrastructure locally:
+- Fun Local Environment: [local-env](https://github.com/fun-stack/local-env)
 
 ## Requirements
 
@@ -50,12 +53,13 @@ Create a new file `fun.tf`:
 ```tf
 module "fun" {
   source  = "fun-stack/fun/aws"
-  version = "0.2.0"
+  version = "?.?.?"
 
   stage = "prod"
 
   domain = {
     name = "<my-domain>" // there needs to exist a hosted zone with that domain name in your aws account
+    # deploy_to_subdomain = "${terraform.workspace}.env"
   }
 
   website = {
@@ -63,19 +67,23 @@ module "fun" {
   }
 
   ws = {
-    source_dir  = "<directory from where to copy lambda files>"
-    handler     = "<exported handler of you lambda>"
-    runtime     = "nodejs14.x"
-    timeout     = 30
-    memory_size = 256
+    rpc = {
+        source_dir  = "<directory from where to copy lambda files>"
+        handler     = "<exported handler of you lambda>"
+        runtime     = "nodejs14.x"
+        timeout     = 30
+        memory_size = 256
+    }
   }
 
   http = {
-    source_dir  = "<directory from where to copy lambda files>"
-    handler     = "<exported handler of you lambda>"
-    runtime     = "nodejs14.x"
-    timeout     = 30
-    memory_size = 256
+    api = {
+        source_dir  = "<directory from where to copy lambda files>"
+        handler     = "<exported handler of you lambda>"
+        runtime     = "nodejs14.x"
+        timeout     = 30
+        memory_size = 256
+    }
   }
 
   auth = {
@@ -93,13 +101,13 @@ Go to `<my-domain>` in your browser.
 
 ## Stages
 
-You can have multiple environments, like dev,staging,prod. Just set `environment = "<dev|staging|prod>"`. These environents are available online at `<environment>.env.<my-domain>`.
+You can have multiple environments, like dev,staging,prod. Just set `stage = "<dev|staging|prod>"`. These environents can be available online at `<stage>.env.<my-domain>`.
 
 ## Modules
 
 ### Auth
 
-Cognito user-pool.
+Cognito user-pool with hosted UI.
 
 ### Websocket-Api
 
