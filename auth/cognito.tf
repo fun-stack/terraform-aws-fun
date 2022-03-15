@@ -25,8 +25,8 @@ resource "aws_cognito_user_pool" "user" {
   }
 }
 resource "aws_cognito_resource_server" "user" {
-  name         = "${local.prefix}-user"
-  identifier   = "${local.prefix}-api"
+  name         = "${local.prefix}-user-api"
+  identifier   = "${local.prefix}-user-api"
   user_pool_id = aws_cognito_user_pool.user.id
 
   scope {
