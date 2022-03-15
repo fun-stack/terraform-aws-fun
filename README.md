@@ -17,39 +17,12 @@ See local development module for mocking the AWS infrastructure locally:
 
 ## Requirements
 
-- yarn
-- node (>= 10.13.0)
 - terraform (>= 1.0.0)
 
 ## How to use?
 
-Make a new directory for your terraform module. In a file `terraform.tf`, you have something like this:
-```tf
-terraform {
-  backend "s3" {
-    encrypt = true
-    region  = "eu-central-1"
-    key     = "my-app.tfstate"
-    bucket  = "<my-terraform-state-bucket>"
-  }
-}
+Use it in your terraform deployment as a module, for example:
 
-provider "aws" {
-  region = "eu-central-1"
-}
-```
-
-Then create the s3 bucket:
-```
-aws s3 mb s3://<my-terraform-state-bucket>
-```
-
-Custom Domain. Either register the domain in AWS or create a hosted zone in AWS (then set the Nameservers at your registrar to the values you get from the following command):
-```
-aws route53 create-hosted-zone --name <my-domain> --caller-reference $(date +%s)
-```
-
-Create a new file `fun.tf`:
 ```tf
 module "fun" {
   source  = "fun-stack/fun/aws"
@@ -89,6 +62,11 @@ module "fun" {
   auth = {
   }
 }
+```
+
+Custom Domain. Either register the domain in AWS or create a hosted zone in AWS (then set the Nameservers at your registrar to the values you get from the following command):
+```
+aws route53 create-hosted-zone --name <my-domain> --caller-reference $(date +%s)
 ```
 
 Run:
