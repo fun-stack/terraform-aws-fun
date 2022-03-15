@@ -244,6 +244,8 @@ resource "aws_s3_object_copy" "website" {
 
   cache_control = length(var.cache_files_regex) > 0 && length(regexall(var.cache_files_regex, each.key)) > 0 ? "max-age=${var.cache_files_max_age}" : "no-cache"
   content_type  = lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9.]+)$", each.key).extension, null)
+
+  metadata_directive = "REPLACE"
 }
 
 resource "aws_s3_bucket_object" "website" {
