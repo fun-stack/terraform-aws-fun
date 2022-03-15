@@ -5,8 +5,9 @@ locals {
 
   app_config_website = local.website == null ? {} : {
     website = {
-      url         = local.url_website
-      environment = local.website.environment == null ? {} : local.website.environment
+      url                     = local.url_website
+      environment             = local.website.environment == null ? {} : local.website.environment
+      authTokenInLocalStorage = local.website.auth_token_in_local_storage
     }
   }
 

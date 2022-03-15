@@ -45,15 +45,16 @@ variable "auth" {
 variable "website" {
   description = "website module with cloudfront and s3"
   type = object({
-    source_dir              = string
-    source_bucket           = optional(string)
-    index_file              = optional(string)
-    error_file              = optional(string)
-    cache_files_regex       = optional(string)
-    cache_files_max_age     = optional(number)
-    environment             = optional(map(string))
-    rewrites                = optional(map(string))
-    content_security_policy = optional(string)
+    source_dir                  = string
+    source_bucket               = optional(string)
+    index_file                  = optional(string)
+    error_file                  = optional(string)
+    cache_files_regex           = optional(string)
+    cache_files_max_age         = optional(number)
+    environment                 = optional(map(string))
+    rewrites                    = optional(map(string))
+    content_security_policy     = optional(string)
+    auth_token_in_local_storage = optional(bool)
   })
   default = null
 }
@@ -135,10 +136,11 @@ locals {
   })
 
   website = var.website == null ? null : defaults(var.website, {
-    index_file              = "index.html"
-    error_file              = "error.html"
-    cache_files_regex       = ""
-    cache_files_max_age     = 31536000
+    index_file                  = "index.html"
+    error_file                  = "error.html"
+    cache_files_regex           = ""
+    cache_files_max_age         = 31536000
+    auth_token_in_local_storage = false
     # content_security_policy    = "default-src 'self'; font-src https://*; img-src https://*; style-src https://*; connect-src https://* wss://*; frame-ancestors 'none'; frame-src 'none';"
   })
 
