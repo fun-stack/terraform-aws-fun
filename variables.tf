@@ -140,7 +140,7 @@ locals {
     error_file                  = "error.html"
     cache_files_regex           = ""
     cache_files_max_age         = 31536000
-    auth_token_in_local_storage = false
+    auth_token_in_local_storage = true
     # content_security_policy    = "default-src 'self'; font-src https://*; img-src https://*; style-src https://*; connect-src https://* wss://*; frame-ancestors 'none'; frame-src 'none';"
   })
 
