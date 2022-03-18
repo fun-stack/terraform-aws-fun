@@ -1,6 +1,7 @@
 locals {
   app_config = {
-    stage = var.stage,
+    stage  = var.stage,
+    region = data.aws_region.current.name
   }
 
   app_config_website = local.website == null ? {} : {
