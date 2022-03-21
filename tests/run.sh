@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -euo pipefail
+set -e
 
 cd $(dirname "$0")
 
