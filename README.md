@@ -21,7 +21,7 @@ See local development module for mocking the AWS infrastructure locally:
 
 ## How to use?
 
-Use it in your terraform deployment as a module. Check out: `tests/`
+Use it in your terraform deployment as a module. Check out: [Examples](tests/)
 
 For the custom domain: Either register the domain in AWS or create a hosted zone in AWS (then set the Nameservers at your registrar to the values you get from the following command):
 ```
