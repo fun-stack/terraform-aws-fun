@@ -21,50 +21,9 @@ See local development module for mocking the AWS infrastructure locally:
 
 ## How to use?
 
-Use it in your terraform deployment as a module, for example:
+Use it in your terraform deployment as a module. Check out: `tests/`
 
-```tf
-module "fun" {
-  source  = "fun-stack/fun/aws"
-  version = "?.?.?"
-
-  stage = "prod"
-
-  domain = {
-    name = "<my-domain>" // there needs to exist a hosted zone with that domain name in your aws account
-    # deploy_to_subdomain = "${terraform.workspace}.env"
-  }
-
-  website = {
-    source_dir = "<directory from where to copy website files>"
-  }
-
-  ws = {
-    rpc = {
-        source_dir  = "<directory from where to copy lambda files>"
-        handler     = "<exported handler of you lambda>"
-        runtime     = "nodejs14.x"
-        timeout     = 30
-        memory_size = 256
-    }
-  }
-
-  http = {
-    api = {
-        source_dir  = "<directory from where to copy lambda files>"
-        handler     = "<exported handler of you lambda>"
-        runtime     = "nodejs14.x"
-        timeout     = 30
-        memory_size = 256
-    }
-  }
-
-  auth = {
-  }
-}
-```
-
-Custom Domain. Either register the domain in AWS or create a hosted zone in AWS (then set the Nameservers at your registrar to the values you get from the following command):
+For the custom domain: Either register the domain in AWS or create a hosted zone in AWS (then set the Nameservers at your registrar to the values you get from the following command):
 ```
 aws route53 create-hosted-zone --name <my-domain> --caller-reference $(date +%s)
 ```
