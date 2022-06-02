@@ -23,6 +23,13 @@ resource "aws_cognito_user_pool" "user" {
     require_symbols                  = false
     require_uppercase                = false
   }
+
+  lambda_config {
+    post_authentication = length(module.lambda_post_authentication) > 0 ? module.lambda_post_authentication.function.arn : null
+    post_confirmation   = length(module.lambda_post_confirmation) > 0 ? module.lambda_post_confirmation.function.arn : null
+    pre_authentication  = length(module.lambda_pre_authentication) > 0 ? module.lambda_pre_authentication.function.arn : null
+    pre_sign_up         = length(module.lambda_pre_sign_up) > 0 ? module.lambda_pre_sign_up.function.arn : null
+  }
 }
 resource "aws_cognito_resource_server" "user" {
   name         = "${local.prefix}-user-api"

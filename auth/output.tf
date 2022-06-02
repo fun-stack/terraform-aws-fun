@@ -17,3 +17,19 @@ output "get_info_policy_arn" {
 output "url" {
   value = var.domain == null ? "https://${aws_cognito_user_pool_domain.user.domain}.auth.${data.aws_region.current.name}.amazoncognito.com" : "https://${var.domain}"
 }
+
+output "post_confirmation_trigger_role" {
+  value = one(module.lambda_post_confirmation[*].role)
+}
+
+output "post_authentication_trigger_role" {
+  value = one(module.lambda_post_authentication[*].role)
+}
+
+output "pre_authentication_trigger_role" {
+  value = one(module.lambda_pre_authentication[*].role)
+}
+
+output "pre_sign_up_trigger_role" {
+  value = one(module.lambda_pre_sign_up[*].role)
+}

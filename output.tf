@@ -6,6 +6,22 @@ output "http_api_role" {
   value = one(module.http[*].api_role)
 }
 
+output "auth_post_confirmation_trigger_role" {
+  value = one(module.auth[*].post_confirmation_trigger_role)
+}
+
+output "auth_post_authentication_trigger_role" {
+  value = one(module.auth[*].post_authentication_trigger_role)
+}
+
+output "auth_pre_authentication_trigger_role" {
+  value = one(module.auth[*].pre_authentication_trigger_role)
+}
+
+output "auth_pre_sign_up_trigger_role" {
+  value = one(module.auth[*].pre_sign_up_trigger_role)
+}
+
 output "prefix" {
   value = local.prefix
 }
