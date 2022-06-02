@@ -13,10 +13,10 @@ module "auth" {
 
   redirect_urls = local.redirect_urls
 
-  post_authentication_trigger = local.auth.lambda_trigger.post_authentication
-  post_confirmation_trigger   = local.auth.lambda_trigger.post_confirmation
-  pre_authentication_trigger  = local.auth.lambda_trigger.pre_authentication
-  pre_sign_up_trigger         = local.auth.lambda_trigger.pre_sign_up
+  post_authentication_trigger = local.auth.post_authentication_trigger
+  post_confirmation_trigger   = local.auth.post_confirmation_trigger
+  pre_authentication_trigger  = local.auth.pre_authentication_trigger
+  pre_sign_up_trigger         = local.auth.pre_sign_up_trigger
 
   providers = {
     aws    = aws

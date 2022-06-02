@@ -39,46 +39,44 @@ variable "auth" {
     css_file   = optional(string)
     image_file = optional(string)
 
-    lambda_trigger = optional(object({
-      post_authentication = optional(object({
-        source_dir    = string
-        source_bucket = optional(string)
-        handler       = string
-        runtime       = string
-        timeout       = optional(number)
-        memory_size   = number
-        environment   = optional(map(string))
-      }))
+    post_authentication_trigger = optional(object({
+      source_dir    = string
+      source_bucket = optional(string)
+      handler       = string
+      runtime       = string
+      timeout       = optional(number)
+      memory_size   = number
+      environment   = optional(map(string))
+    }))
 
-      post_confirmation = optional(object({
-        source_dir    = string
-        source_bucket = optional(string)
-        handler       = string
-        runtime       = string
-        timeout       = optional(number)
-        memory_size   = number
-        environment   = optional(map(string))
-      }))
+    post_confirmation_trigger = optional(object({
+      source_dir    = string
+      source_bucket = optional(string)
+      handler       = string
+      runtime       = string
+      timeout       = optional(number)
+      memory_size   = number
+      environment   = optional(map(string))
+    }))
 
-      pre_authentication = optional(object({
-        source_dir    = string
-        source_bucket = optional(string)
-        handler       = string
-        runtime       = string
-        timeout       = optional(number)
-        memory_size   = number
-        environment   = optional(map(string))
-      }))
+    pre_authentication_trigger = optional(object({
+      source_dir    = string
+      source_bucket = optional(string)
+      handler       = string
+      runtime       = string
+      timeout       = optional(number)
+      memory_size   = number
+      environment   = optional(map(string))
+    }))
 
-      pre_sign_up = optional(object({
-        source_dir    = string
-        source_bucket = optional(string)
-        handler       = string
-        runtime       = string
-        timeout       = optional(number)
-        memory_size   = number
-        environment   = optional(map(string))
-      }))
+    pre_sign_up_trigger = optional(object({
+      source_dir    = string
+      source_bucket = optional(string)
+      handler       = string
+      runtime       = string
+      timeout       = optional(number)
+      memory_size   = number
+      environment   = optional(map(string))
     }))
   })
   default = null
@@ -207,7 +205,6 @@ locals {
   })
 
   auth = var.auth == null ? null : defaults(var.auth, {
-    lambda_trigger = {}
   })
 
   prefix = "fun-${local.module_name}-${var.stage}"
