@@ -7,6 +7,6 @@ module "dns" {
   hosted_zone_id = var.hosted_zone_id
 
   providers = {
-    aws = aws.us
+    aws = aws.us-east-1
   }
 }
