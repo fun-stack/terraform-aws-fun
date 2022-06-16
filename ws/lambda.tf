@@ -15,6 +15,8 @@ module "lambda_rpc" {
   environment = merge(var.rpc.environment == null ? {} : var.rpc.environment, {
     FUN_EVENTS_SNS_OUTPUT_TOPIC = aws_sns_topic.subscription_events.id
   })
+
+  vpc_config = var.rpc.vpc_config
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_rpc_events" {

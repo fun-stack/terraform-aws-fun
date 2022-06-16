@@ -47,6 +47,10 @@ variable "auth" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      vpc_config = optional(object({
+        subnet_ids         = list(string)
+        security_group_ids = list(string)
+      }))
     }))
 
     post_confirmation_trigger = optional(object({
@@ -57,6 +61,10 @@ variable "auth" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      vpc_config = optional(object({
+        subnet_ids         = list(string)
+        security_group_ids = list(string)
+      }))
     }))
 
     pre_authentication_trigger = optional(object({
@@ -67,6 +75,10 @@ variable "auth" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      vpc_config = optional(object({
+        subnet_ids         = list(string)
+        security_group_ids = list(string)
+      }))
     }))
 
     pre_sign_up_trigger = optional(object({
@@ -77,6 +89,10 @@ variable "auth" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      vpc_config = optional(object({
+        subnet_ids         = list(string)
+        security_group_ids = list(string)
+      }))
     }))
   })
   default = null
@@ -112,6 +128,10 @@ variable "http" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      vpc_config = optional(object({
+        subnet_ids         = list(string)
+        security_group_ids = list(string)
+      }))
     }))
 
     rpc = optional(object({
@@ -122,6 +142,10 @@ variable "http" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      vpc_config = optional(object({
+        subnet_ids         = list(string)
+        security_group_ids = list(string)
+      }))
     }))
   })
   default = null
@@ -140,6 +164,10 @@ variable "ws" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      vpc_config = optional(object({
+        subnet_ids         = list(string)
+        security_group_ids = list(string)
+      }))
     }))
 
     event_authorizer = optional(object({
@@ -150,6 +178,10 @@ variable "ws" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      vpc_config = optional(object({
+        subnet_ids         = list(string)
+        security_group_ids = list(string)
+      }))
     }))
   })
   default = null

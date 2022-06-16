@@ -35,6 +35,13 @@ variable "environment" {
   type = map(string)
 }
 
+variable "vpc_config" {
+  type = object({
+    subnet_ids         = list(string)
+    security_group_ids = list(string)
+  })
+}
+
 locals {
   module_name     = basename(abspath(path.module))
   prefix          = "${var.prefix}-${local.module_name}"

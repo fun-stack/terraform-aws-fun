@@ -13,6 +13,8 @@ module "lambda_api" {
   handler       = var.api.handler
 
   environment = var.api.environment
+
+  vpc_config = var.api.vpc_config
 }
 
 module "lambda_rpc" {
@@ -30,4 +32,6 @@ module "lambda_rpc" {
   handler       = var.rpc.handler
 
   environment = var.rpc.environment
+
+  vpc_config = var.rpc.vpc_config
 }

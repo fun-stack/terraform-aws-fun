@@ -32,6 +32,14 @@ resource "aws_lambda_function" "lambda" {
       variables = var.environment
     }
   }
+
+  dynamic "vpc_config" {
+    for_each = var.vpc_config == null ? [] : ["0"]
+    content {
+      subnet_ids         = var.vpc_config.subnet_ids
+      security_group_ids = var.vpc_config.security_group_ids
+    }
+  }
 }
 
 resource "aws_iam_role" "lambda" {
@@ -54,5 +62,5 @@ EOF
 
 resource "aws_iam_role_policy_attachment" "lambda" {
   role       = aws_iam_role.lambda.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  policy_arn = var.vpc_config == null ? "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole" : "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }

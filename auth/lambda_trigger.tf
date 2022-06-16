@@ -13,6 +13,8 @@ module "lambda_post_authentication" {
   handler       = var.post_authentication_trigger.handler
 
   environment = var.post_authentication_trigger.environment
+
+  vpc_config = var.post_authentication_trigger.vpc_config
 }
 
 module "lambda_post_confirmation" {
@@ -30,6 +32,8 @@ module "lambda_post_confirmation" {
   handler       = var.post_confirmation_trigger.handler
 
   environment = var.post_confirmation_trigger.environment
+
+  vpc_config = var.post_confirmation_trigger.vpc_config
 }
 
 module "lambda_pre_authentication" {
@@ -47,6 +51,8 @@ module "lambda_pre_authentication" {
   handler       = var.pre_authentication_trigger.handler
 
   environment = var.pre_authentication_trigger.environment
+
+  vpc_config = var.pre_authentication_trigger.vpc_config
 }
 
 module "lambda_pre_sign_up" {
@@ -64,4 +70,6 @@ module "lambda_pre_sign_up" {
   handler       = var.pre_sign_up_trigger.handler
 
   environment = var.pre_sign_up_trigger.environment
+
+  vpc_config = var.pre_sign_up_trigger.vpc_config
 }
