@@ -28,7 +28,7 @@ resource "aws_apigatewayv2_integration" "httpapi_default" {
 }
 
 resource "aws_apigatewayv2_route" "httpapi_underscore" {
-  for_each  = var.api == null ? [] : toset(["POST"])
+  for_each  = var.rpc == null ? [] : toset(["POST"])
   api_id    = aws_apigatewayv2_api.httpapi.id
   route_key = "${each.value} /_/{proxy+}"
 
