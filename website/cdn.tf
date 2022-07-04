@@ -249,7 +249,7 @@ resource "aws_s3_object_copy" "website" {
 }
 
 resource "aws_s3_bucket_object" "website" {
-  for_each = var.source_bucket == null ? fileset(var.source_dir, "*") : []
+  for_each = var.source_bucket == null ? fileset(var.source_dir, "**") : []
 
   bucket = aws_s3_bucket.website.bucket
   key    = each.key
