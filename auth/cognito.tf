@@ -1,6 +1,11 @@
 resource "aws_cognito_user_pool" "user" {
   name = "${local.prefix}-user"
 
+
+  admin_create_user_config {
+    allow_admin_create_user_only = var.admin_registration_only
+  }
+
   #TODO
   username_attributes      = ["email"]
   auto_verified_attributes = ["email"]
