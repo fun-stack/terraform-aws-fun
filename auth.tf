@@ -8,6 +8,8 @@ module "auth" {
   css_file   = local.auth.css_file
   image_file = local.auth.image_file
 
+  admin_registration_only   = local.auth.admin_registration_only
+
   domain         = local.domain_auth
   hosted_zone_id = one(data.aws_route53_zone.domain[*].zone_id)
 

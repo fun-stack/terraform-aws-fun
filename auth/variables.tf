@@ -10,6 +10,10 @@ variable "domain" {
   type = string
 }
 
+variable "admin_registration_only" {
+  type = bool
+}
+
 variable "css_file" {
   type = string
 }
