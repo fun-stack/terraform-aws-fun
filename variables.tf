@@ -36,8 +36,8 @@ variable "dev_setup" {
 variable "auth" {
   description = "auth module with cognito"
   type = object({
-    css_file   = optional(string)
-    image_file = optional(string)
+    css_file                = optional(string)
+    image_file              = optional(string)
     admin_registration_only = optional(bool)
 
     post_authentication_trigger = optional(object({
@@ -238,11 +238,10 @@ locals {
   })
 
   auth = var.auth == null ? null : defaults(var.auth, {
+    admin_registration_only = false
   })
 
   prefix = "fun-${local.module_name}-${var.stage}"
-
-  admin_registration_only = var.auth.admin_registration_only != null ? var.auth.admin_registration_only : false
 
   domain         = var.domain == null ? null : (var.domain.deploy_to_subdomain == null || var.domain.deploy_to_subdomain == "" ? var.domain.name : "${var.domain.deploy_to_subdomain}.${var.domain.name}")
   domain_website = local.domain
