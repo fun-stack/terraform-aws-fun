@@ -8,7 +8,7 @@ module "auth" {
   css_file   = local.auth.css_file
   image_file = local.auth.image_file
 
-  admin_registration_only   = local.auth.admin_registration_only
+  admin_registration_only = local.auth.admin_registration_only
 
   domain         = local.domain_auth
   hosted_zone_id = one(data.aws_route53_zone.domain[*].zone_id)
@@ -21,7 +21,7 @@ module "auth" {
   pre_sign_up_trigger         = local.auth.pre_sign_up_trigger
 
   providers = {
-    aws    = aws
+    aws           = aws
     aws.us-east-1 = aws.us-east-1
   }
 }
