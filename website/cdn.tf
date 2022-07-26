@@ -240,12 +240,16 @@ resource "aws_s3_object_copy" "website" {
   bucket = aws_s3_bucket.website.bucket
   key    = trimprefix(substr(each.key, length(var.source_dir), length(each.key)), "/")
   source = "${var.source_bucket}/${each.key}"
-  //TODO: etag with source_bucket
 
   cache_control = length(var.cache_files_regex) > 0 && length(regexall(var.cache_files_regex, each.key)) > 0 ? "max-age=${var.cache_files_max_age}" : "no-cache"
   content_type  = try(lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9.]+)$", each.key).extension, null), null)
 
   metadata_directive = "REPLACE"
+
+  //WORKAROUND: https://github.com/hashicorp/terraform-provider-aws/issues/25477
+  lifecycle {
+      ignore_changes = [tags_all]
+  }
 }
 
 resource "aws_s3_bucket_object" "website" {
