@@ -1,5 +1,5 @@
 module "minimal" {
   source = "../"
 
-  stage = "stage"
+  name_prefix = "stage"
 }
