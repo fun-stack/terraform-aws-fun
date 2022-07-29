@@ -4,7 +4,13 @@ variable "region" {
 }
 
 variable "name_prefix" {
-  description = "The name prefix, to separate deployments. Is added as a prefix to resource names."
+  description = "Prefix for naming resources in the deployment."
+  type        = string
+  default     = null
+}
+
+variable "stage" {
+  description = "The stage name, that is dev, staging, prod, etc."
   type        = string
 }
 
@@ -241,7 +247,7 @@ locals {
     admin_registration_only = false
   })
 
-  prefix = var.name_prefix
+  prefix = "${var.name_prefix == null ? "fun-${local.module_name}" : var.name_prefix}-${var.stage}"
 
   domain         = var.domain == null ? null : (var.domain.deploy_to_subdomain == null || var.domain.deploy_to_subdomain == "" ? var.domain.name : "${var.domain.deploy_to_subdomain}.${var.domain.name}")
   domain_website = local.domain

@@ -1,7 +1,7 @@
 module "maximal" {
   source = "../"
 
-  name_prefix = "stage"
+  stage = "stage"
 
   # domain = {
   #   name                = "example.com"

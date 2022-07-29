@@ -1,7 +1,7 @@
 module "website" {
   source = "../"
 
-  name_prefix = "stage"
+  stage = "stage"
 
   website = {
     source_dir = "./"

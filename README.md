@@ -38,7 +38,7 @@ Go to `<my-domain>` in your browser.
 
 ## Stages
 
-You can have multiple environments, like dev,staging,prod. Just set `name_prefix = "my-name-<dev|staging|prod>"`. These environents can be available online at `<sub-domain>.<my-domain>`.
+You can have multiple environments, like dev,staging,prod. Just set `stage = "<dev|staging|prod>"`. These environents can be available online at `<stage>.env.<my-domain>`.
 
 ## Troubleshooting
 
