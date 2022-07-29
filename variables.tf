@@ -247,7 +247,7 @@ locals {
     admin_registration_only = false
   })
 
-  prefix = "${var.name_prefix == null ? "fun-${local.module_name}" : var.name_prefix}-${var.stage}"
+  prefix = var.name_prefix == null ? "fun-${local.module_name}-${var.stage}" : var.name_prefix
 
   domain         = var.domain == null ? null : (var.domain.deploy_to_subdomain == null || var.domain.deploy_to_subdomain == "" ? var.domain.name : "${var.domain.deploy_to_subdomain}.${var.domain.name}")
   domain_website = local.domain
