@@ -1,8 +1,3 @@
-variable "region" {
-  type    = string
-  default = "eu-central-1"
-}
-
 variable "name_prefix" {
   description = "Prefix for naming resources in the deployment."
   type        = string
@@ -190,15 +185,6 @@ variable "ws" {
         security_group_ids = list(string)
       }))
     }))
-  })
-  default = null
-}
-
-variable "budget" {
-  description = "create a budget with email notification for this deployment"
-  type = object({
-    limit_monthly_dollar = string
-    notify_email         = string
   })
   default = null
 }

@@ -4,12 +4,7 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 3.74.0"
+      configuration_aliases = [aws, aws.us-east-1]
     }
-  }
-}
-
-locals {
-  default_tags = {
-    funstack = local.prefix
   }
 }

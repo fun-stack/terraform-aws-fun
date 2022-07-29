@@ -67,13 +67,13 @@ module "maximal" {
     # css_file   = "auth.css"
   }
 
-  budget = {
-    limit_monthly_dollar = "10.0"
-    notify_email         = "me@example.net"
-  }
-
   dev_setup = {
     enabled           = true
     local_website_url = "http://localhost:12345" # auth can redirect to that website, cors of http api allows origin
+  }
+
+  providers = {
+    aws = aws
+    aws.us-east-1 = aws.us-east-1
   }
 }
