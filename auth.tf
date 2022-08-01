@@ -20,6 +20,10 @@ module "auth" {
   pre_authentication_trigger  = local.auth.pre_authentication_trigger
   pre_sign_up_trigger         = local.auth.pre_sign_up_trigger
 
+  depends_on = [
+    module.website
+  ]
+
   providers = {
     aws           = aws
     aws.us-east-1 = aws.us-east-1

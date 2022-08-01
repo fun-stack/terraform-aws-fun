@@ -77,6 +77,10 @@ resource "aws_apigatewayv2_domain_name" "httpapi" {
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
+
+  depends_on = [
+    module.dns[0]
+  ]
 }
 resource "aws_route53_record" "httpapi" {
   count   = var.domain == null ? 0 : 1

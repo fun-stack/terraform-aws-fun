@@ -98,6 +98,10 @@ resource "aws_cognito_user_pool_domain" "user" {
   domain          = var.domain == null ? random_pet.domain_name[0].id : var.domain
   user_pool_id    = aws_cognito_user_pool.user.id
   certificate_arn = var.domain == null ? null : module.dns[0].certificate_arn
+
+  depends_on = [
+    module.dns[0]
+  ]
 }
 
 resource "aws_route53_record" "cognito" {
