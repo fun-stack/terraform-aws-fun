@@ -22,6 +22,10 @@ output "auth_pre_sign_up_trigger_role" {
   value = one(module.auth[*].pre_sign_up_trigger_role)
 }
 
+output "auth_cognito_user_pool_id" {
+  value = one(module.auth[*].user_pool.id)
+}
+
 output "prefix" {
   value = local.prefix
 }
