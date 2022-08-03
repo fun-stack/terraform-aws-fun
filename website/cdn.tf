@@ -248,7 +248,7 @@ resource "aws_s3_object_copy" "website" {
 
   //WORKAROUND: https://github.com/hashicorp/terraform-provider-aws/issues/25477
   lifecycle {
-      ignore_changes = [tags_all]
+    ignore_changes = [tags_all]
   }
 }
 
