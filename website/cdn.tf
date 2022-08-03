@@ -235,11 +235,11 @@ data "aws_s3_bucket_objects" "website" {
 }
 
 resource "aws_s3_object_copy" "website" {
-  for_each = toset(var.source_bucket != null ? data.aws_s3_bucket_objects.website[0].keys : [])
+  for_each = toset(var.source_bucket != null ? [ for key in data.aws_s3_bucket_objects.website[0].keys: trimprefix(substr(key, length(var.source_dir), length(key)), "/") ] : [])
 
   bucket = aws_s3_bucket.website.bucket
-  key    = trimprefix(substr(each.key, length(var.source_dir), length(each.key)), "/")
-  source = "${var.source_bucket}/${each.key}"
+  key    = each.key
+  source = "${var.source_bucket}/${var.source_dir}/${each.key}"
 
   cache_control = length(var.cache_files_regex) > 0 && length(regexall(var.cache_files_regex, each.key)) > 0 ? "max-age=${var.cache_files_max_age}" : "no-cache"
   content_type  = try(lookup(local.content_type_map, regex("\\.(?P<extension>[A-Za-z0-9.]+)$", each.key).extension, null), null)
