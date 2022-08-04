@@ -37,8 +37,8 @@ variable "dev_setup" {
 variable "auth" {
   description = "auth module with cognito"
   type = object({
-    css_file                = optional(string)
-    image_file              = optional(string)
+    css_content                = optional(string)
+    image_content              = optional(string)
     admin_registration_only = optional(bool)
 
     post_authentication_trigger = optional(object({

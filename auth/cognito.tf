@@ -79,11 +79,11 @@ resource "aws_cognito_user_pool_client" "website_client" {
 }
 
 resource "aws_cognito_user_pool_ui_customization" "hosted_ui" {
-  count     = var.css_file != null || var.image_file != null ? 1 : 0
+  count     = var.css_content != null || var.image_content != null ? 1 : 0
   client_id = aws_cognito_user_pool_client.website_client.id
 
-  css        = var.css_file == null ? null : file(var.css_file) //".label-customizable {font-weight: 400;}"
-  image_file = var.image_file == null ? null : filebase64(var.image_file)
+  css        = var.css_content
+  image_file = var.image_content == null ? null : base64(var.image_content)
 
   user_pool_id = aws_cognito_user_pool_domain.user.user_pool_id
 }

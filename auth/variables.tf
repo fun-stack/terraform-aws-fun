@@ -14,11 +14,11 @@ variable "admin_registration_only" {
   type = bool
 }
 
-variable "css_file" {
+variable "css_content" {
   type = string
 }
 
-variable "image_file" {
+variable "image_content" {
   type = string
 }
 
