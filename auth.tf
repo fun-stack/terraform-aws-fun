@@ -5,8 +5,8 @@ module "auth" {
   prefix                = local.prefix
   log_retention_in_days = local.logging.retention_in_days
 
-  css_content   = local.auth.css_content
-  image_content = local.auth.image_content
+  css_content           = local.auth.css_content
+  image_base64_content  = local.auth.image_base64_content
 
   admin_registration_only = local.auth.admin_registration_only
 

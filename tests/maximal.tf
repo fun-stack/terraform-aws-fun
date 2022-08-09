@@ -63,8 +63,8 @@ module "maximal" {
   }
 
   auth = {
-    # image_content = "file(auth.jpg)"
-    # css_content   = "file(auth.css)"
+    # image_base64_content  = "filebase64(auth.jpg)"
+    # css_content           = "file(auth.css)"
   }
 
   dev_setup = {
