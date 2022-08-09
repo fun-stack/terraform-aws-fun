@@ -18,7 +18,7 @@ variable "css_content" {
   type = string
 }
 
-variable "image_content" {
+variable "image_base64_content" {
   type = string
 }
 
