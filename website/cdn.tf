@@ -249,9 +249,9 @@ resource "aws_s3_object_copy" "website" {
   # metadata_directive = "REPLACE"
 
   # //WORKAROUND: https://github.com/hashicorp/terraform-provider-aws/issues/25477
-  # lifecycle {
-  #   ignore_changes = [tags_all]
-  # }
+  lifecycle {
+    ignore_changes = [tags_all]
+  }
 }
 
 resource "aws_s3_bucket_object" "website" {
