@@ -53,3 +53,18 @@ output "hosted_zone_id" {
 output "app_config" {
   value = local.app_config_js
 }
+
+output "backend_environment_vars" {
+  value = merge(
+    length(module.ws) == 0 ? {} : {
+      FUN_EVENTS_SNS_OUTPUT_TOPIC = module.ws[0].event_topic
+    },
+    length(module.auth) == 0 ? {} : {
+      FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
+    }
+  )
+}
+
+output "backend_policy_arn" {
+  value = one(module.ws[*].event_policy_arn)
+}
