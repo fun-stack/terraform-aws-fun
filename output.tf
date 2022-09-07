@@ -6,6 +6,10 @@ output "http_api_role" {
   value = one(module.http[*].api_role)
 }
 
+output "http_rpc_role" {
+  value = one(module.http[*].rpc_role)
+}
+
 output "auth_post_confirmation_trigger_role" {
   value = one(module.auth[*].post_confirmation_trigger_role)
 }
