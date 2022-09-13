@@ -1,3 +1,7 @@
+output "website_bucket" {
+  value = one(module.website[*].bucket)
+}
+
 output "ws_rpc_role" {
   value = one(module.ws[*].rpc_role)
 }
