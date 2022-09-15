@@ -39,7 +39,8 @@ variable "auth" {
   type = object({
     css_content                = optional(string)
     image_base64_content       = optional(string)
-    admin_registration_only = optional(bool)
+    admin_registration_only    = optional(bool)
+    extra_redirect_urls        = optional(list(string))
 
     post_authentication_trigger = optional(object({
       source_dir    = string
