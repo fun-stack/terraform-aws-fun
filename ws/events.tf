@@ -46,7 +46,8 @@ resource "aws_sns_topic_subscription" "subscription_cleanup" {
 // lambda
 
 module "lambda_event_expander" {
-  source = "../lambda"
+  source  = "cornerman/lambda/aws"
+  version = "0.1.1"
 
   prefix                = "${local.prefix}-event-expander"
   log_retention_in_days = var.log_retention_in_days
@@ -67,7 +68,8 @@ module "lambda_event_expander" {
 }
 
 module "lambda_event_sender" {
-  source = "../lambda"
+  source  = "cornerman/lambda/aws"
+  version = "0.1.1"
 
   prefix                = "${local.prefix}-event-sender"
   log_retention_in_days = var.log_retention_in_days
@@ -87,7 +89,9 @@ module "lambda_event_sender" {
 
 module "lambda_event_authorizer" {
   count  = var.event_authorizer == null ? 0 : 1
-  source = "../lambda"
+
+  source  = "cornerman/lambda/aws"
+  version = "0.1.1"
 
   prefix                = "${local.prefix}-event-authorizer"
   log_retention_in_days = var.log_retention_in_days
@@ -106,7 +110,8 @@ module "lambda_event_authorizer" {
 }
 
 module "lambda_subscription_cleanup" {
-  source = "../lambda"
+  source  = "cornerman/lambda/aws"
+  version = "0.1.1"
 
   prefix                = "${local.prefix}-subscription-cleanup"
   log_retention_in_days = var.log_retention_in_days

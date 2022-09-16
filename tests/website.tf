@@ -4,7 +4,7 @@ module "website" {
   stage = "stage"
 
   website = {
-    source_dir = "./"
+    source_dir = "./src"
   }
 
   providers = {

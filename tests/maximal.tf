@@ -10,7 +10,7 @@ module "maximal" {
   # }
 
   website = {
-    source_dir              = "./"
+    source_dir              = "./src"
     cache_files_regex       = ".*-hashed.(js|css)"
     content_security_policy = "some-header"
     rewrites = {
@@ -20,7 +20,7 @@ module "maximal" {
 
   http = {
     api = {
-      source_dir  = "./"
+      source_dir  = "./src"
       handler     = "main.httpApi"
       runtime     = "nodejs14.x"
       memory_size = 256
@@ -30,7 +30,7 @@ module "maximal" {
     }
 
     rpc = {
-      source_dir  = "./"
+      source_dir  = "./src"
       handler     = "main.httpRpc"
       runtime     = "nodejs14.x"
       memory_size = 256
@@ -42,7 +42,7 @@ module "maximal" {
 
   ws = {
     rpc = {
-      source_dir  = "./"
+      source_dir  = "./src"
       handler     = "main.wsRpc"
       runtime     = "nodejs14.x"
       memory_size = 256
@@ -52,7 +52,7 @@ module "maximal" {
     }
 
     event_authorizer = {
-      source_dir  = "./"
+      source_dir  = "./src"
       handler     = "main.wsEventAuth"
       runtime     = "nodejs14.x"
       memory_size = 256
