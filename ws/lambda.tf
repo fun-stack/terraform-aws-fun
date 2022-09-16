@@ -1,10 +1,10 @@
 module "lambda_rpc" {
-  count  = var.rpc == null ? 0 : 1
+  count = var.rpc == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.1"
+  version = "0.1.3"
 
-  prefix                = "${local.prefix}-rpc"
+  name                  = "${local.prefix}-rpc"
   log_retention_in_days = var.log_retention_in_days
 
   source_bucket = var.rpc.source_bucket

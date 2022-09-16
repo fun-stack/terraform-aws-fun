@@ -1,8 +1,8 @@
 module "lambda" {
   source  = "cornerman/lambda/aws"
-  version = "0.1.1"
+  version = "0.1.3"
 
-  prefix                = local.prefix
+  name                  = local.prefix
   log_retention_in_days = var.log_retention_in_days
 
   source_dir  = "${path.module}/../src/authorizer/build/"

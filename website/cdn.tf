@@ -235,7 +235,7 @@ data "aws_s3_objects" "website" {
 }
 
 resource "aws_s3_object_copy" "website" {
-  for_each = toset([ for key in flatten(data.aws_s3_objects.website[*].keys): trimprefix(substr(key, length(data.aws_s3_objects.website[0].prefix), length(key)), "/") ])
+  for_each = toset([for key in flatten(data.aws_s3_objects.website[*].keys) : trimprefix(substr(key, length(data.aws_s3_objects.website[0].prefix), length(key)), "/")])
 
   bucket = aws_s3_bucket.website.bucket
   key    = each.key

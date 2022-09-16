@@ -1,10 +1,10 @@
 module "lambda_post_authentication" {
-  count  = var.post_authentication_trigger == null ? 0 : 1
+  count = var.post_authentication_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.1"
+  version = "0.1.3"
 
-  prefix                = "${local.prefix}-post-authentication-trigger"
+  name                  = "${local.prefix}-post-authentication-trigger"
   log_retention_in_days = var.log_retention_in_days
 
   source_bucket = var.post_authentication_trigger.source_bucket
@@ -20,12 +20,12 @@ module "lambda_post_authentication" {
 }
 
 module "lambda_post_confirmation" {
-  count  = var.post_confirmation_trigger == null ? 0 : 1
+  count = var.post_confirmation_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.1"
+  version = "0.1.3"
 
-  prefix                = "${local.prefix}-post-confirmation-trigger"
+  name                  = "${local.prefix}-post-confirmation-trigger"
   log_retention_in_days = var.log_retention_in_days
 
   source_bucket = var.post_confirmation_trigger.source_bucket
@@ -41,12 +41,12 @@ module "lambda_post_confirmation" {
 }
 
 module "lambda_pre_authentication" {
-  count  = var.pre_authentication_trigger == null ? 0 : 1
+  count = var.pre_authentication_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.1"
+  version = "0.1.3"
 
-  prefix                = "${local.prefix}-pre-authentication-trigger"
+  name                  = "${local.prefix}-pre-authentication-trigger"
   log_retention_in_days = var.log_retention_in_days
 
   source_bucket = var.pre_authentication_trigger.source_bucket
@@ -62,12 +62,12 @@ module "lambda_pre_authentication" {
 }
 
 module "lambda_pre_sign_up" {
-  count  = var.pre_sign_up_trigger == null ? 0 : 1
+  count = var.pre_sign_up_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.1"
+  version = "0.1.3"
 
-  prefix                = "${local.prefix}-pre-sign-up-trigger"
+  name                  = "${local.prefix}-pre-sign-up-trigger"
   log_retention_in_days = var.log_retention_in_days
 
   source_bucket = var.pre_sign_up_trigger.source_bucket
