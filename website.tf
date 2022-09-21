@@ -23,7 +23,7 @@ module "website" {
   }
 }
 
-resource "aws_s3_bucket_object" "config_file" {
+resource "aws_s3_bucket_object" "config_file_js" {
   count = local.website == null ? 0 : 1
 
   bucket  = module.website[0].bucket
@@ -32,4 +32,15 @@ resource "aws_s3_bucket_object" "config_file" {
 
   cache_control = "no-cache"
   content_type  = "application/javascript"
+}
+
+resource "aws_s3_bucket_object" "config_file_json" {
+  count = local.website == null ? 0 : 1
+
+  bucket  = module.website[0].bucket
+  key     = "app_config.js"
+  content = local.app_config_json
+
+  cache_control = "no-cache"
+  content_type  = "application/json"
 }

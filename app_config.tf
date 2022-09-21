@@ -30,10 +30,13 @@ locals {
     auth = {
       url      = local.url_auth
       clientId = module.auth[0].user_pool_client.id
+      apiScopes = join(" ", module.auth[0].api_scopes)
     }
   }
 
+  app_config_json = jsonencode(merge(local.app_config, local.app_config_website, local.app_config_ws, local.app_config_http, local.app_config_auth))
+
   app_config_js = <<EOF
-window.AppConfig = ${jsonencode(merge(local.app_config, local.app_config_website, local.app_config_ws, local.app_config_http, local.app_config_auth))};
+window.AppConfig = ${local.app_config_json};
 EOF
 }
