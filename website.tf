@@ -38,7 +38,7 @@ resource "aws_s3_bucket_object" "config_file_json" {
   count = local.website == null ? 0 : 1
 
   bucket  = module.website[0].bucket
-  key     = "app_config.js"
+  key     = "app_config.json"
   content = local.app_config_json
 
   cache_control = "no-cache"
