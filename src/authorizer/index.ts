@@ -156,7 +156,11 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
     if (currentSeconds > claim.exp || currentSeconds < claim.auth_time) {
       throw new Error('claim is expired or invalid');
     }
-    if (!cognitoApiScopes.split(" ").every(scope => claim.scope.split(" ").some(s => s == scope))) {
+    const cognitoApiScopesSplit = cognitoApiScopes.split(" ");
+    const claimScopesSplit = claim.scope.split(" ");
+    //TODO: allow admin scope, otherwise initiated access tokens dont work: https://github.com/aws/aws-sdk/issues/178
+    const hasCorrectClaims = claimScopesSplit.some(s => s == "aws.cognito.signin.user.admin") || cognitoApiScopesSplit.every(scope => claimScopesSplit.some(s => s == scope));
+    if (!hasCorrectClaims) {
       throw new Error(`claim misses scope, required: ${cognitoApiScopes}`);
     }
     if (claim.iss !== cognitoIssuer) {
