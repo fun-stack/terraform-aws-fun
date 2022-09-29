@@ -1,3 +1,7 @@
+locals {
+  event_sender_topic_arn = var.event_authorizer == null ? aws_sns_topic.connection_events.arn : aws_sns_topic.connection_events_authorized[0].arn
+}
+
 // topics
 # TODO: FIFO? message-group by subscription-key. But throughput only 300 transactions per second
 # fifo_topic = true
@@ -25,7 +29,7 @@ resource "aws_sns_topic_subscription" "event_expander" {
 }
 
 resource "aws_sns_topic_subscription" "event_sender" {
-  topic_arn = var.event_authorizer == null ? aws_sns_topic.connection_events.arn : aws_sns_topic.connection_events_authorized[0].arn
+  topic_arn = local.event_sender_topic_arn
   protocol  = "lambda"
   endpoint  = module.lambda_event_sender.function.arn
 }
