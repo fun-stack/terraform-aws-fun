@@ -244,7 +244,7 @@ locals {
   url_ws      = length(module.ws) > 0 ? (local.domain_ws == null ? module.ws[0].url : "wss://${local.domain_ws}") : null
   url_http    = length(module.http) > 0 ? (local.domain_http == null ? module.http[0].url : "https://${local.domain_http}") : null
 
-  auth_redirect_urls = compact(concat([local.url_website, local.domain_http == null ? null : "${local.domain_http}/oauth2-redirect.html"], flatten([local.auth == null ? null : local.auth.extra_redirect_urls])))
+  auth_redirect_urls = compact(concat([local.url_website, local.url_http == null ? null : "${local.url_http}/oauth2-redirect.html"], flatten([local.auth == null ? null : local.auth.extra_redirect_urls])))
 
   http_allow_origins = compact(concat([local.url_website], flatten([local.http == null ? null : local.http.extra_allow_origins])))
 }
