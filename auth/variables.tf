@@ -14,20 +14,8 @@ variable "admin_registration_only" {
   type = bool
 }
 
-variable "css_content" {
-  type = string
-}
-
-variable "image_base64_content" {
-  type = string
-}
-
 variable "hosted_zone_id" {
   type = string
-}
-
-variable "redirect_urls" {
-  type = list(string)
 }
 
 variable "post_authentication_trigger" {

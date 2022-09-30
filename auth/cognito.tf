@@ -49,44 +49,6 @@ resource "aws_cognito_resource_server" "user" {
     scope_description = "Get access to all API Gateway endpoints for http and ws."
   }
 }
-resource "aws_cognito_user_pool_client" "website_client" {
-  name         = "${local.prefix}-website-client"
-  user_pool_id = aws_cognito_user_pool.user.id
-
-  allowed_oauth_flows_user_pool_client = true
-  allowed_oauth_flows = [
-    "code",
-  ]
-  allowed_oauth_scopes = concat(
-    aws_cognito_resource_server.user.scope_identifiers,
-    [
-      "aws.cognito.signin.user.admin",
-      "email",
-      "openid",
-      # "phone",
-      # "profile",
-    ]
-  )
-  explicit_auth_flows = [
-    "ALLOW_REFRESH_TOKEN_AUTH",
-    "ALLOW_USER_PASSWORD_AUTH",
-  ]
-  supported_identity_providers = [
-    "COGNITO",
-  ]
-  logout_urls   = [for url in var.redirect_urls : "${url}?logout"]
-  callback_urls = var.redirect_urls
-}
-
-resource "aws_cognito_user_pool_ui_customization" "hosted_ui" {
-  count     = var.css_content != null || var.image_base64_content != null ? 1 : 0
-  client_id = aws_cognito_user_pool_client.website_client.id
-
-  css        = var.css_content
-  image_file = var.image_base64_content
-
-  user_pool_id = aws_cognito_user_pool_domain.user.user_pool_id
-}
 
 resource "random_pet" "domain_name" {
   count     = var.domain == null ? 1 : 0

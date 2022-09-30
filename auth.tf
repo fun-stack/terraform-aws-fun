@@ -4,16 +4,10 @@ module "auth" {
 
   prefix                = local.prefix
   log_retention_in_days = local.logging.retention_in_days
-
-  css_content          = local.auth.css_content
-  image_base64_content = local.auth.image_base64_content
-
   admin_registration_only = local.auth.admin_registration_only
 
   domain         = local.domain_auth
   hosted_zone_id = one(data.aws_route53_zone.domain[*].zone_id)
-
-  redirect_urls = local.auth_redirect_urls
 
   post_authentication_trigger = local.auth.post_authentication_trigger
   post_confirmation_trigger   = local.auth.post_confirmation_trigger
@@ -21,6 +15,9 @@ module "auth" {
   pre_sign_up_trigger         = local.auth.pre_sign_up_trigger
 
   depends_on = [
+    //TODO: only because cognito on a subdomain only works if the main domain
+    //has an a record, e.g. from the website. But takes longer to delay this
+    //whole module.
     module.website
   ]
 

@@ -1,7 +1,3 @@
-output "user_pool_client" {
-  value = aws_cognito_user_pool_client.website_client
-}
-
 output "api_scopes" {
   value = aws_cognito_resource_server.user.scope_identifiers
 }
