@@ -19,7 +19,7 @@ module "maximal" {
   }
 
   http = {
-    extra_allow_origins = [ "http://localhost:12345" ] # cors of http api allows origin
+    extra_allow_origins = ["http://localhost:12345"] # cors of http api allows origin
 
     api = {
       source_dir  = "./src"
@@ -67,7 +67,7 @@ module "maximal" {
   auth = {
     # image_base64_content  = "filebase64(auth.jpg)"
     # css_content           = "file(auth.css)"
-    extra_redirect_urls = [ "http://localhost:12345" ] # auth can redirect to that website
+    extra_redirect_urls = ["http://localhost:12345"] # auth can redirect to that website
   }
 
   providers = {

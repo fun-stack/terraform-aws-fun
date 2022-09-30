@@ -28,8 +28,8 @@ locals {
 
   app_config_auth = local.auth == null ? {} : {
     auth = {
-      url      = local.url_auth
-      clientId = module.auth[0].user_pool_client.id
+      url       = local.url_auth
+      clientId  = module.auth[0].user_pool_client.id
       apiScopes = join(" ", module.auth[0].api_scopes)
     }
   }
