@@ -122,6 +122,7 @@ variable "http" {
   description = "http module with api gateway http"
   type = object({
     allow_unauthenticated = optional(bool)
+    extra_allow_origins   = optional(list(string))
 
     api = optional(object({
       source_dir    = string
@@ -197,10 +198,6 @@ locals {
     retention_in_days = 3
   })
 
-  dev_setup = defaults(var.dev_setup, {
-    enabled = true
-  })
-
   website = var.website == null ? null : defaults(var.website, {
     index_file                  = "index.html"
     error_file                  = "error.html"
@@ -247,8 +244,7 @@ locals {
   url_ws      = length(module.ws) > 0 ? (local.domain_ws == null ? module.ws[0].url : "wss://${local.domain_ws}") : null
   url_http    = length(module.http) > 0 ? (local.domain_http == null ? module.http[0].url : "https://${local.domain_http}") : null
 
-  redirect_urls = concat(
-    [local.url_website],
-    local.dev_setup.enabled && local.dev_setup.local_website_url != null ? [local.dev_setup.local_website_url] : []
-  )
+  auth_redirect_urls = compact(concat([local.url_website, local.domain_http == null ? null : "${local.domain_http}/oauth2-redirect.html"], flatten([local.auth == null ? null : local.auth.extra_redirect_urls])))
+
+  http_allow_origins = compact(concat([local.url_website], flatten([local.http == null ? null : local.http.extra_allow_origins])))
 }

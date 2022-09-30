@@ -13,7 +13,7 @@ module "auth" {
   domain         = local.domain_auth
   hosted_zone_id = one(data.aws_route53_zone.domain[*].zone_id)
 
-  redirect_urls = concat(local.redirect_urls, local.auth.extra_redirect_urls == null ? [] : local.auth.extra_redirect_urls)
+  redirect_urls = local.auth_redirect_urls
 
   post_authentication_trigger = local.auth.post_authentication_trigger
   post_confirmation_trigger   = local.auth.post_confirmation_trigger
