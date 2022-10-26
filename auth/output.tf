@@ -14,6 +14,10 @@ output "url" {
   value = var.domain == null ? "https://${aws_cognito_user_pool_domain.user.domain}.auth.${data.aws_region.current.name}.amazoncognito.com" : "https://${var.domain}"
 }
 
+output "idp_url" {
+  value = "https://cognito-idp.${data.aws_region.current.name}.amazonaws.com/${aws_cognito_user_pool.user.id}"
+}
+
 output "post_confirmation_trigger_role" {
   value = one(module.lambda_post_confirmation[*].role)
 }
