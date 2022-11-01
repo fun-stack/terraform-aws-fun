@@ -36,8 +36,4 @@ locals {
   }
 
   app_config_json = jsonencode(merge(local.app_config, local.app_config_website, local.app_config_ws, local.app_config_http, local.app_config_auth))
-
-  app_config_js = <<EOF
-window.AppConfig = ${local.app_config_json};
-EOF
 }

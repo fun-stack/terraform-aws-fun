@@ -58,10 +58,6 @@ output "hosted_zone_id" {
   value = one(data.aws_route53_zone.domain[*].zone_id)
 }
 
-output "app_config" {
-  value = local.app_config_js
-}
-
 output "backend_environment_vars" {
   value = merge(
     length(module.ws) == 0 ? {} : {
