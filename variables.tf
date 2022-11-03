@@ -192,12 +192,6 @@ variable "ws" {
 locals {
   module_name = replace(basename(abspath(path.module)), "_", "-")
 
-  logging = var.logging
-  website = var.website
-  ws = var.ws
-  http = var.http
-  auth = var.auth
-
   prefix = var.name_prefix == null ? "fun-${local.module_name}-${var.stage}" : var.name_prefix
 
   domain         = var.domain == null ? null : (var.domain.deploy_to_subdomain == null || var.domain.deploy_to_subdomain == "" ? var.domain.name : "${var.domain.deploy_to_subdomain}.${var.domain.name}")
@@ -212,7 +206,7 @@ locals {
   url_ws       = length(module.ws) > 0 ? (local.domain_ws == null ? module.ws[0].url : "wss://${local.domain_ws}") : null
   url_http     = length(module.http) > 0 ? (local.domain_http == null ? module.http[0].url : "https://${local.domain_http}") : null
 
-  auth_redirect_urls = compact(concat([local.url_website, local.url_http == null ? null : "${local.url_http}/oauth2-redirect.html"], flatten([local.auth == null ? null : local.auth.extra_redirect_urls])))
+  auth_redirect_urls = compact(concat([local.url_website, local.url_http == null ? null : "${local.url_http}/oauth2-redirect.html"], flatten([var.auth == null ? null : var.auth.extra_redirect_urls])))
 
-  http_allow_origins = compact(concat([local.url_website], flatten([local.http == null ? null : local.http.extra_allow_origins])))
+  http_allow_origins = compact(concat([local.url_website], flatten([var.http == null ? null : var.http.extra_allow_origins])))
 }

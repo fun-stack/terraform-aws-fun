@@ -1,27 +1,27 @@
 module "ws" {
-  count  = local.ws == null ? 0 : 1
+  count  = var.ws == null ? 0 : 1
   source = "./ws"
 
   prefix                = local.prefix
-  log_retention_in_days = local.logging.retention_in_days
+  log_retention_in_days = var.logging.retention_in_days
 
   domain                = local.domain_ws
   hosted_zone_id        = one(data.aws_route53_zone.domain[*].zone_id)
   auth_module           = one(module.auth)
-  allow_unauthenticated = local.ws.allow_unauthenticated
+  allow_unauthenticated = var.ws.allow_unauthenticated
 
-  rpc = lookup(local.ws, "rpc", null) == null ? null : merge(local.ws.rpc, {
+  rpc = lookup(var.ws, "rpc", null) == null ? null : merge(var.ws.rpc, {
     environment = merge(
-      local.ws.rpc.environment == null ? {} : local.ws.rpc.environment,
+      var.ws.rpc.environment == null ? {} : var.ws.rpc.environment,
       length(module.auth) == 0 ? {} : {
         FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
       }
     )
   })
 
-  event_authorizer = lookup(local.ws, "event_authorizer", null) == null ? null : merge(local.ws.event_authorizer, {
+  event_authorizer = lookup(var.ws, "event_authorizer", null) == null ? null : merge(var.ws.event_authorizer, {
     environment = merge(
-      local.ws.event_authorizer.environment == null ? {} : local.ws.event_authorizer.environment,
+      var.ws.event_authorizer.environment == null ? {} : var.ws.event_authorizer.environment,
       length(module.auth) == 0 ? {} : {
         FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
       }
