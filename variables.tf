@@ -21,7 +21,7 @@ variable "domain" {
 
 variable "logging" {
   type = object({
-    retention_in_days = optional(number)
+    retention_in_days = optional(number, 3)
   })
   default = {}
 }
@@ -39,7 +39,7 @@ variable "auth" {
   type = object({
     css_content             = optional(string)
     image_base64_content    = optional(string)
-    admin_registration_only = optional(bool)
+    admin_registration_only = optional(bool, false)
     extra_redirect_urls     = optional(list(string))
 
     post_authentication_trigger = optional(object({
@@ -106,14 +106,14 @@ variable "website" {
   type = object({
     source_dir                  = string
     source_bucket               = optional(string)
-    index_file                  = optional(string)
-    error_file                  = optional(string)
-    cache_files_regex           = optional(string)
-    cache_files_max_age         = optional(number)
+    index_file                  = optional(string, "index.html")
+    error_file                  = optional(string, "error.html")
+    cache_files_regex           = optional(string, "")
+    cache_files_max_age         = optional(number, 31536000)
     environment                 = optional(map(string))
     rewrites                    = optional(map(string))
     content_security_policy     = optional(string)
-    auth_token_in_local_storage = optional(bool)
+    auth_token_in_local_storage = optional(bool, true)
   })
   default = null
 }
@@ -121,15 +121,14 @@ variable "website" {
 variable "http" {
   description = "http module with api gateway http"
   type = object({
-    allow_unauthenticated = optional(bool)
+    allow_unauthenticated = optional(bool, true)
     extra_allow_origins   = optional(list(string))
-
     api = optional(object({
       source_dir    = string
       source_bucket = optional(string)
       handler       = string
       runtime       = string
-      timeout       = optional(number)
+      timeout       = optional(number, 30)
       memory_size   = number
       environment   = optional(map(string))
       vpc_config = optional(object({
@@ -143,7 +142,7 @@ variable "http" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
-      timeout       = optional(number)
+      timeout       = optional(number, 30)
       memory_size   = number
       environment   = optional(map(string))
       vpc_config = optional(object({
@@ -158,14 +157,13 @@ variable "http" {
 variable "ws" {
   description = "ws module with api gateway websocket"
   type = object({
-    allow_unauthenticated = optional(bool)
-
+    allow_unauthenticated = optional(bool, true)
     rpc = optional(object({
       source_dir    = string
       source_bucket = optional(string)
       handler       = string
       runtime       = string
-      timeout       = optional(number)
+      timeout       = optional(number, 30)
       memory_size   = number
       environment   = optional(map(string))
       vpc_config = optional(object({
@@ -179,7 +177,7 @@ variable "ws" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
-      timeout       = optional(number)
+      timeout       = optional(number, 5)
       memory_size   = number
       environment   = optional(map(string))
       vpc_config = optional(object({
@@ -194,42 +192,11 @@ variable "ws" {
 locals {
   module_name = replace(basename(abspath(path.module)), "_", "-")
 
-  logging = defaults(var.logging, {
-    retention_in_days = 3
-  })
-
-  website = var.website == null ? null : defaults(var.website, {
-    index_file                  = "index.html"
-    error_file                  = "error.html"
-    cache_files_regex           = ""
-    cache_files_max_age         = 31536000
-    auth_token_in_local_storage = true
-    # content_security_policy    = "default-src 'self'; font-src https://*; img-src https://*; style-src https://*; connect-src https://* wss://*; frame-ancestors 'none'; frame-src 'none';"
-  })
-
-  ws = var.ws == null ? null : defaults(var.ws, {
-    allow_unauthenticated = true
-    event_authorizer = {
-      timeout = 5
-    }
-    rpc = {
-      timeout = 30
-    }
-  })
-
-  http = var.http == null ? null : defaults(var.http, {
-    allow_unauthenticated = true
-    api = {
-      timeout = 30
-    }
-    rpc = {
-      timeout = 30
-    }
-  })
-
-  auth = var.auth == null ? null : defaults(var.auth, {
-    admin_registration_only = false
-  })
+  logging = var.logging
+  website = var.website
+  ws = var.ws
+  http = var.http
+  auth = var.auth
 
   prefix = var.name_prefix == null ? "fun-${local.module_name}-${var.stage}" : var.name_prefix
 
