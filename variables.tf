@@ -54,7 +54,7 @@ variable "auth" {
         subnet_ids         = list(string)
         security_group_ids = list(string)
       }))
-    }))
+    }), null)
 
     post_confirmation_trigger = optional(object({
       source_dir    = string
@@ -68,7 +68,7 @@ variable "auth" {
         subnet_ids         = list(string)
         security_group_ids = list(string)
       }))
-    }))
+    }), null)
 
     pre_authentication_trigger = optional(object({
       source_dir    = string
@@ -82,7 +82,7 @@ variable "auth" {
         subnet_ids         = list(string)
         security_group_ids = list(string)
       }))
-    }))
+    }), null)
 
     pre_sign_up_trigger = optional(object({
       source_dir    = string
@@ -96,7 +96,7 @@ variable "auth" {
         subnet_ids         = list(string)
         security_group_ids = list(string)
       }))
-    }))
+    }), null)
   })
   default = null
 }
@@ -135,7 +135,7 @@ variable "http" {
         subnet_ids         = list(string)
         security_group_ids = list(string)
       }))
-    }))
+    }), null)
 
     rpc = optional(object({
       source_dir    = string
@@ -149,7 +149,7 @@ variable "http" {
         subnet_ids         = list(string)
         security_group_ids = list(string)
       }))
-    }))
+    }), null)
   })
   default = null
 }
@@ -169,8 +169,8 @@ variable "ws" {
       vpc_config = optional(object({
         subnet_ids         = list(string)
         security_group_ids = list(string)
-      }))
-    }))
+      }), null)
+    }), null)
 
     event_authorizer = optional(object({
       source_dir    = string
@@ -184,7 +184,7 @@ variable "ws" {
         subnet_ids         = list(string)
         security_group_ids = list(string)
       }))
-    }))
+    }), null)
   })
   default = null
 }
