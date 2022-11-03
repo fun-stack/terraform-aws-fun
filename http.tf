@@ -6,7 +6,7 @@ module "http" {
   log_retention_in_days = var.logging.retention_in_days
 
   domain                = local.domain_http
-  allow_origins         = var.http_allow_origins
+  allow_origins         = local.http_allow_origins
   hosted_zone_id        = one(data.aws_route53_zone.domain[*].zone_id)
   auth_module           = one(module.auth)
   allow_unauthenticated = var.http.allow_unauthenticated

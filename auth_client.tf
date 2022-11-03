@@ -10,7 +10,7 @@ module "auth_client" {
   user_pool_id = module.auth[0].user_pool.id
   api_scopes   = module.auth[0].api_scopes
 
-  redirect_urls = var.auth_redirect_urls
+  redirect_urls = local.auth_redirect_urls
 
   providers = {
     aws           = aws
