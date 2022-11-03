@@ -17,7 +17,7 @@ See local development module for mocking the AWS infrastructure locally:
 
 ## Requirements
 
-- terraform (>= 1.0.0)
+- terraform (>= 1.3.0)
 
 ## How to use?
 
