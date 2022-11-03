@@ -1,19 +1,19 @@
 module "http" {
-  count  = local.http == null ? 0 : 1
+  count  = var.http == null ? 0 : 1
   source = "./http"
 
   prefix                = local.prefix
-  log_retention_in_days = local.logging.retention_in_days
+  log_retention_in_days = var.logging.retention_in_days
 
   domain                = local.domain_http
-  allow_origins         = local.http_allow_origins
+  allow_origins         = var.http_allow_origins
   hosted_zone_id        = one(data.aws_route53_zone.domain[*].zone_id)
   auth_module           = one(module.auth)
-  allow_unauthenticated = local.http.allow_unauthenticated
+  allow_unauthenticated = var.http.allow_unauthenticated
 
-  api = lookup(local.http, "api", null) == null ? null : merge(local.http.api, {
+  api = lookup(var.http, "api", null) == null ? null : merge(var.http.api, {
     environment = merge(
-      local.http.api.environment == null ? {} : local.http.api.environment,
+      var.http.api.environment == null ? {} : var.http.api.environment,
       length(module.ws) == 0 ? {} : {
         FUN_EVENTS_SNS_OUTPUT_TOPIC = module.ws[0].event_topic
       },
@@ -23,9 +23,9 @@ module "http" {
     )
   })
 
-  rpc = lookup(local.http, "rpc", null) == null ? null : merge(local.http.rpc, {
+  rpc = lookup(var.http, "rpc", null) == null ? null : merge(var.http.rpc, {
     environment = merge(
-      local.http.rpc.environment == null ? {} : local.http.rpc.environment,
+      var.http.rpc.environment == null ? {} : var.http.rpc.environment,
       length(module.ws) == 0 ? {} : {
         FUN_EVENTS_SNS_OUTPUT_TOPIC = module.ws[0].event_topic
       },

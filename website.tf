@@ -1,5 +1,5 @@
 module "website" {
-  count  = local.website == null ? 0 : 1
+  count  = var.website == null ? 0 : 1
   source = "./website"
 
   prefix = local.prefix
@@ -7,11 +7,11 @@ module "website" {
   domain         = local.domain_website
   hosted_zone_id = one(data.aws_route53_zone.domain[*].zone_id)
 
-  content_security_policy = local.website.content_security_policy
+  content_security_policy = var.website.content_security_policy
 
-  index_file = local.website.index_file
-  error_file = local.website.error_file
-  rewrites   = local.website.rewrites
+  index_file = var.website.index_file
+  error_file = var.website.error_file
+  rewrites   = var.website.rewrites
 
   providers = {
     aws           = aws

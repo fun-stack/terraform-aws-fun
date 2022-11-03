@@ -68,22 +68,6 @@ Solution:
 terraform apply # just retry
 ```
 
-### Expected warnings
-
-This warning is expected, you can safely ignore it.
-
-```
-│ Warning: Experimental feature "module_variable_optional_attrs" is active
-│
-│   on .terraform/modules/example/terraform.tf line 2, in terraform:
-│    2:   experiments = [module_variable_optional_attrs]
-│
-│ Experimental features are subject to breaking changes in future minor or patch releases, based on feedback.
-│
-│ If you have feedback on the design of this feature, please open a GitHub issue to discuss it.
-╵
-```
-
 ## Modules
 
 ### Auth
