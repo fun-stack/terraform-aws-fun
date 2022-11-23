@@ -13,6 +13,9 @@ variable "domain" {
   description = "Deploy under a custom domain. for this to work, you will need a hosted zone for the specified domain name in your aws account."
   type = object({
     name                = string
+    enable_for_auth     = optional(bool, true)
+    enable_for_http     = optional(bool, true)
+    enable_for_ws       = optional(bool, true)
     deploy_to_subdomain = optional(string)
     catch_all_email     = optional(string)
   })
@@ -196,9 +199,9 @@ locals {
 
   domain         = var.domain == null ? null : (var.domain.deploy_to_subdomain == null || var.domain.deploy_to_subdomain == "" ? var.domain.name : "${var.domain.deploy_to_subdomain}.${var.domain.name}")
   domain_website = local.domain
-  domain_auth    = local.domain == null ? null : "auth.${local.domain}"
-  domain_ws      = local.domain == null ? null : "ws.${local.domain}"
-  domain_http    = local.domain == null ? null : "api.${local.domain}"
+  domain_auth    = local.domain == null ? null : var.domain.enable_for_auth ? "auth.${local.domain}" : null
+  domain_ws      = local.domain == null ? null : var.domain.enable_for_ws ? "ws.${local.domain}" : null
+  domain_http    = local.domain == null ? null : var.domain.enable_for_http ? "api.${local.domain}" : null
 
   url_website  = length(module.website) > 0 ? (local.domain_website == null ? module.website[0].url : "https://${local.domain_website}") : null
   url_auth     = length(module.auth) > 0 ? (local.domain_auth == null ? module.auth[0].url : "https://${local.domain_auth}") : null
