@@ -174,7 +174,7 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
     return {
       principalId: 'user',
       policyDocument: generatePolicy(resourceArn, "Allow"),
-      context: claim
+      context: stringifyClaim(claim)
     };
   } catch (error) {
     console.error("Deny: Failed to verify token", error);
@@ -185,5 +185,26 @@ const handler = async (request: ClaimVerifyRequest): Promise<ClaimVerifyResult> 
     };
   }
 };
+
+// Every claim value has to be of type string. Otherwise api-gateway will
+// silently drop the request and it will never reach the api-lambda. The
+// jwt-authorizer of the api gateway http-api just stringifies all
+// non-string claims. We do the same:
+function stringifyClaim(claim: object) {
+  const result = {};
+
+  for (var key in claim) {
+    if (claim.hasOwnProperty(key)) {
+      const value = claim[key];
+      if (typeof value === 'string' || value instanceof String) {
+        result[key] = value;
+      } else {
+        result[key] = JSON.stringify(value);
+      }
+    }
+  }
+
+  return result;
+}
 
 export {handler};
