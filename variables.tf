@@ -29,14 +29,6 @@ variable "logging" {
   default = {}
 }
 
-variable "dev_setup" {
-  type = object({
-    enabled           = optional(bool)
-    local_website_url = optional(string)
-  })
-  default = {}
-}
-
 variable "auth" {
   description = "auth module with cognito"
   type = object({
