@@ -2,7 +2,7 @@ module "lambda_rpc" {
   count = var.rpc == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-rpc"
   log_retention_in_days = var.log_retention_in_days
@@ -19,6 +19,8 @@ module "lambda_rpc" {
   })
 
   vpc_config = var.rpc.vpc_config
+
+  layers = var.rpc.layers
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_rpc_events" {

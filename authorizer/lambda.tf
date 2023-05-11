@@ -1,6 +1,6 @@
 module "lambda" {
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = local.prefix
   log_retention_in_days = var.log_retention_in_days
@@ -17,6 +17,4 @@ module "lambda" {
     ALLOW_UNAUTHENTICATED = var.allow_unauthenticated
     IDENTITY_SOURCE       = var.identity_source
   }
-
-  vpc_config = null
 }

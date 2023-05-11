@@ -27,6 +27,7 @@ variable "rpc" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    layers        = optional(list(string))
     vpc_config = optional(object({
       subnet_ids         = list(string)
       security_group_ids = list(string)
@@ -47,6 +48,7 @@ variable "event_authorizer" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    layers        = optional(list(string))
     vpc_config = optional(object({
       subnet_ids         = list(string)
       security_group_ids = list(string)

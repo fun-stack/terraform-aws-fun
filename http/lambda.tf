@@ -2,7 +2,7 @@ module "lambda_api" {
   count = var.api == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-api"
   log_retention_in_days = var.log_retention_in_days
@@ -23,7 +23,7 @@ module "lambda_rpc" {
   count = var.rpc == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-rpc"
   log_retention_in_days = var.log_retention_in_days

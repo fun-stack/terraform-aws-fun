@@ -27,6 +27,7 @@ variable "post_authentication_trigger" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    layers        = optional(list(string))
     vpc_config = optional(object({
       subnet_ids         = list(string)
       security_group_ids = list(string)
@@ -43,6 +44,7 @@ variable "post_confirmation_trigger" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    layers        = optional(list(string))
     vpc_config = optional(object({
       subnet_ids         = list(string)
       security_group_ids = list(string)
@@ -59,6 +61,7 @@ variable "pre_authentication_trigger" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    layers        = optional(list(string))
     vpc_config = optional(object({
       subnet_ids         = list(string)
       security_group_ids = list(string)
@@ -75,6 +78,7 @@ variable "pre_sign_up_trigger" {
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
+    layers        = optional(list(string))
     vpc_config = optional(object({
       subnet_ids         = list(string)
       security_group_ids = list(string)

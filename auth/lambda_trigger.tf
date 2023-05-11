@@ -2,7 +2,7 @@ module "lambda_post_authentication" {
   count = var.post_authentication_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-post-authentication-trigger"
   log_retention_in_days = var.log_retention_in_days
@@ -17,13 +17,15 @@ module "lambda_post_authentication" {
   environment = var.post_authentication_trigger.environment
 
   vpc_config = var.post_authentication_trigger.vpc_config
+
+  layers = var.post_authentication_trigger.layers
 }
 
 module "lambda_post_confirmation" {
   count = var.post_confirmation_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-post-confirmation-trigger"
   log_retention_in_days = var.log_retention_in_days
@@ -38,13 +40,15 @@ module "lambda_post_confirmation" {
   environment = var.post_confirmation_trigger.environment
 
   vpc_config = var.post_confirmation_trigger.vpc_config
+
+  layers = var.post_confirmation_trigger.layers
 }
 
 module "lambda_pre_authentication" {
   count = var.pre_authentication_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-pre-authentication-trigger"
   log_retention_in_days = var.log_retention_in_days
@@ -59,13 +63,15 @@ module "lambda_pre_authentication" {
   environment = var.pre_authentication_trigger.environment
 
   vpc_config = var.pre_authentication_trigger.vpc_config
+
+  layers = var.pre_authentication_trigger.layers
 }
 
 module "lambda_pre_sign_up" {
   count = var.pre_sign_up_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-pre-sign-up-trigger"
   log_retention_in_days = var.log_retention_in_days
@@ -80,4 +86,6 @@ module "lambda_pre_sign_up" {
   environment = var.pre_sign_up_trigger.environment
 
   vpc_config = var.pre_sign_up_trigger.vpc_config
+
+  layers = var.pre_sign_up_trigger.layers
 }

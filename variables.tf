@@ -45,6 +45,7 @@ variable "auth" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      layers        = optional(list(string))
       vpc_config = optional(object({
         subnet_ids         = list(string)
         security_group_ids = list(string)
@@ -59,6 +60,7 @@ variable "auth" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      layers        = optional(list(string))
       vpc_config = optional(object({
         subnet_ids         = list(string)
         security_group_ids = list(string)
@@ -73,6 +75,7 @@ variable "auth" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      layers        = optional(list(string))
       vpc_config = optional(object({
         subnet_ids         = list(string)
         security_group_ids = list(string)
@@ -87,6 +90,7 @@ variable "auth" {
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
+      layers        = optional(list(string))
       vpc_config = optional(object({
         subnet_ids         = list(string)
         security_group_ids = list(string)
@@ -126,6 +130,7 @@ variable "http" {
       timeout       = optional(number, 30)
       memory_size   = number
       environment   = optional(map(string))
+      layers        = optional(list(string))
       vpc_config = optional(object({
         subnet_ids         = list(string)
         security_group_ids = list(string)
@@ -140,6 +145,7 @@ variable "http" {
       timeout       = optional(number, 30)
       memory_size   = number
       environment   = optional(map(string))
+      layers        = optional(list(string))
       vpc_config = optional(object({
         subnet_ids         = list(string)
         security_group_ids = list(string)
@@ -161,6 +167,7 @@ variable "ws" {
       timeout       = optional(number, 30)
       memory_size   = number
       environment   = optional(map(string))
+      layers        = optional(list(string))
       vpc_config = optional(object({
         subnet_ids         = list(string)
         security_group_ids = list(string)
@@ -175,6 +182,7 @@ variable "ws" {
       timeout       = optional(number, 5)
       memory_size   = number
       environment   = optional(map(string))
+      layers        = optional(list(string))
       vpc_config = optional(object({
         subnet_ids         = list(string)
         security_group_ids = list(string)

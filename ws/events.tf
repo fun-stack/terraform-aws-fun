@@ -51,7 +51,7 @@ resource "aws_sns_topic_subscription" "subscription_cleanup" {
 
 module "lambda_event_expander" {
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-event-expander"
   log_retention_in_days = var.log_retention_in_days
@@ -67,13 +67,11 @@ module "lambda_event_expander" {
     SNS_INPUT_TOPIC            = aws_sns_topic.subscription_events.id
     SNS_OUTPUT_TOPIC           = aws_sns_topic.connection_events.id
   }
-
-  vpc_config = null
 }
 
 module "lambda_event_sender" {
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-event-sender"
   log_retention_in_days = var.log_retention_in_days
@@ -87,15 +85,13 @@ module "lambda_event_sender" {
   environment = {
     API_GATEWAY_ENDPOINT = replace(local.api_gateway_url, "wss://", "")
   }
-
-  vpc_config = null
 }
 
 module "lambda_event_authorizer" {
   count = var.event_authorizer == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-event-authorizer"
   log_retention_in_days = var.log_retention_in_days
@@ -111,11 +107,13 @@ module "lambda_event_authorizer" {
   })
 
   vpc_config = var.event_authorizer.vpc_config
+
+  layers = var.event_authorizer.layers
 }
 
 module "lambda_subscription_cleanup" {
   source  = "cornerman/lambda/aws"
-  version = "0.1.3"
+  version = "0.1.4"
 
   name                  = "${local.prefix}-subscription-cleanup"
   log_retention_in_days = var.log_retention_in_days
@@ -130,8 +128,6 @@ module "lambda_subscription_cleanup" {
     DYNAMO_SUBSCRIPTIONS_TABLE = aws_dynamodb_table.websocket_subscriptions.id
     SNS_INPUT_TOPIC            = aws_sns_topic.connection_deletion.id
   }
-
-  vpc_config = null
 }
 
 // IAM
