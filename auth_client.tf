@@ -2,7 +2,7 @@ module "auth_client" {
   count  = var.auth == null ? 0 : 1
   source = "./auth_client"
 
-  prefix                = local.prefix
+  prefix = local.prefix
 
   css_content          = var.auth.css_content
   image_base64_content = var.auth.image_base64_content

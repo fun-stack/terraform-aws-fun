@@ -2,8 +2,8 @@ module "auth" {
   count  = var.auth == null ? 0 : 1
   source = "./auth"
 
-  prefix                = local.prefix
-  log_retention_in_days = var.logging.retention_in_days
+  prefix                  = local.prefix
+  log_retention_in_days   = var.logging.retention_in_days
   admin_registration_only = var.auth.admin_registration_only
 
   domain         = local.domain_auth
