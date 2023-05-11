@@ -17,6 +17,8 @@ module "lambda_api" {
   environment = var.api.environment
 
   vpc_config = var.api.vpc_config
+
+  layers = var.api.layers
 }
 
 module "lambda_rpc" {
@@ -38,4 +40,6 @@ module "lambda_rpc" {
   environment = var.rpc.environment
 
   vpc_config = var.rpc.vpc_config
+
+  layers = var.rpc.layers
 }
