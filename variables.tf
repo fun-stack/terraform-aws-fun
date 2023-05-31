@@ -109,7 +109,7 @@ variable "website" {
     error_file                  = optional(string, "error.html")
     cache_files_regex           = optional(string, "")
     cache_files_max_age         = optional(number, 31536000)
-    environment                 = optional(object({}))
+    environment                 = optional(map(any))
     rewrites                    = optional(map(string))
     content_security_policy     = optional(string)
     auth_token_in_local_storage = optional(bool, true)

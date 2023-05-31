@@ -6,11 +6,9 @@ module "website" {
   website = {
     source_dir = "./src"
     environment = {
-      "foo" = true
-      "obj" = {
-        "nested" = 1
-        "str" = "hello"
-  }
+      "boo" = true
+      "num" = 1
+      "str" = "hello"
     }
   }
 
