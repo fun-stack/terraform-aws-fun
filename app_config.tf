@@ -7,7 +7,7 @@ locals {
   app_config_website = var.website == null ? {} : {
     website = {
       url                     = local.url_website
-      environment             = var.website.environment == null ? {} : var.website.environment
+      environment             = var.website.environment
       authTokenInLocalStorage = var.website.auth_token_in_local_storage
     }
   }
