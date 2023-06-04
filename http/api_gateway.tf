@@ -1,15 +1,19 @@
+locals {
+  http_methods = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
+}
+
 resource "aws_apigatewayv2_api" "httpapi" {
   name          = local.prefix
   protocol_type = "HTTP"
   cors_configuration {
     allow_origins = var.allow_origins
-    allow_methods = ["GET", "POST", "PUT", "DELETE"]
+    allow_methods = local.http_methods
     allow_headers = ["authorization"]
   }
 }
 
 resource "aws_apigatewayv2_route" "httpapi_default" {
-  for_each  = var.api == null ? [] : toset(["GET", "POST", "PUT", "DELETE"])
+  for_each  = var.api == null ? [] : toset(local.http_methods)
   api_id    = aws_apigatewayv2_api.httpapi.id
   route_key = "${each.value} /{proxy+}"
 
