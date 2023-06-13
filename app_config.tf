@@ -29,7 +29,6 @@ locals {
   app_config_auth = var.auth == null ? {} : {
     auth = {
       url       = local.url_auth
-      idpUrl    = local.url_auth_idp
       clientId  = module.auth_client[0].user_pool_client.id
       apiScopes = join(" ", module.auth[0].api_scopes)
     }

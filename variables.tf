@@ -205,7 +205,6 @@ locals {
 
   url_website  = length(module.website) > 0 ? (local.domain_website == null ? module.website[0].url : "https://${local.domain_website}") : null
   url_auth     = length(module.auth) > 0 ? (local.domain_auth == null ? module.auth[0].url : "https://${local.domain_auth}") : null
-  url_auth_idp = length(module.auth) > 0 ? module.auth[0].idp_url : null
   url_ws       = length(module.ws) > 0 ? (local.domain_ws == null ? module.ws[0].url : "wss://${local.domain_ws}") : null
   url_http     = length(module.http) > 0 ? (local.domain_http == null ? module.http[0].url : "https://${local.domain_http}") : null
 
