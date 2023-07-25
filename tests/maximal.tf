@@ -24,7 +24,7 @@ module "maximal" {
     api = {
       source_dir  = "./src"
       handler     = "main.httpApi"
-      runtime     = "nodejs14.x"
+      runtime     = "nodejs18.x"
       memory_size = 256
       environment = {
         NODE_OPTIONS = "--enable-source-maps"
@@ -34,7 +34,7 @@ module "maximal" {
     rpc = {
       source_dir  = "./src"
       handler     = "main.httpRpc"
-      runtime     = "nodejs14.x"
+      runtime     = "nodejs18.x"
       memory_size = 256
       environment = {
         NODE_OPTIONS = "--enable-source-maps"
@@ -46,7 +46,7 @@ module "maximal" {
     rpc = {
       source_dir  = "./src"
       handler     = "main.wsRpc"
-      runtime     = "nodejs14.x"
+      runtime     = "nodejs18.x"
       memory_size = 256
       environment = {
         NODE_OPTIONS = "--enable-source-maps"
@@ -56,7 +56,7 @@ module "maximal" {
     event_authorizer = {
       source_dir  = "./src"
       handler     = "main.wsEventAuth"
-      runtime     = "nodejs14.x"
+      runtime     = "nodejs18.x"
       memory_size = 256
       environment = {
         NODE_OPTIONS = "--enable-source-maps"

@@ -59,7 +59,7 @@ module "lambda_event_expander" {
   source_dir  = "${path.module}/../src/event_expander/build/"
   timeout     = 60
   memory_size = 256
-  runtime     = "nodejs14.x"
+  runtime     = "nodejs18.x"
   handler     = "index.handler"
 
   environment = {
@@ -79,7 +79,7 @@ module "lambda_event_sender" {
   source_dir  = "${path.module}/../src/event_sender/build/"
   timeout     = 30
   memory_size = 128
-  runtime     = "nodejs14.x"
+  runtime     = "nodejs18.x"
   handler     = "index.handler"
 
   environment = {
@@ -124,7 +124,7 @@ module "lambda_subscription_cleanup" {
   source_dir  = "${path.module}/../src/subscription_cleanup/build/"
   timeout     = 60
   memory_size = 256
-  runtime     = "nodejs14.x"
+  runtime     = "nodejs18.x"
   handler     = "index.handler"
 
   environment = {

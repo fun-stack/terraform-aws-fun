@@ -8,7 +8,7 @@ module "lambda" {
   source_dir  = "${path.module}/../src/authorizer/build/"
   timeout     = 30
   memory_size = 128
-  runtime     = "nodejs14.x"
+  runtime     = "nodejs18.x"
   handler     = "index.handler"
 
   environment = {
