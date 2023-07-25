@@ -2,7 +2,7 @@ module "lambda_post_authentication" {
   count = var.post_authentication_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = "${local.prefix}-post-authentication-trigger"
   log_retention_in_days = var.log_retention_in_days
@@ -13,6 +13,8 @@ module "lambda_post_authentication" {
   memory_size   = var.post_authentication_trigger.memory_size
   runtime       = var.post_authentication_trigger.runtime
   handler       = var.post_authentication_trigger.handler
+
+  architecture  = var.post_authentication_trigger.architecture
 
   environment = var.post_authentication_trigger.environment
 
@@ -25,7 +27,7 @@ module "lambda_post_confirmation" {
   count = var.post_confirmation_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = "${local.prefix}-post-confirmation-trigger"
   log_retention_in_days = var.log_retention_in_days
@@ -36,6 +38,8 @@ module "lambda_post_confirmation" {
   memory_size   = var.post_confirmation_trigger.memory_size
   runtime       = var.post_confirmation_trigger.runtime
   handler       = var.post_confirmation_trigger.handler
+
+  architecture  = var.post_confirmation_trigger.architecture
 
   environment = var.post_confirmation_trigger.environment
 
@@ -48,7 +52,7 @@ module "lambda_pre_authentication" {
   count = var.pre_authentication_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = "${local.prefix}-pre-authentication-trigger"
   log_retention_in_days = var.log_retention_in_days
@@ -59,6 +63,8 @@ module "lambda_pre_authentication" {
   memory_size   = var.pre_authentication_trigger.memory_size
   runtime       = var.pre_authentication_trigger.runtime
   handler       = var.pre_authentication_trigger.handler
+
+  architecture  = var.pre_authentication_trigger.architecture
 
   environment = var.pre_authentication_trigger.environment
 
@@ -71,7 +77,7 @@ module "lambda_pre_sign_up" {
   count = var.pre_sign_up_trigger == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = "${local.prefix}-pre-sign-up-trigger"
   log_retention_in_days = var.log_retention_in_days
@@ -82,6 +88,8 @@ module "lambda_pre_sign_up" {
   memory_size   = var.pre_sign_up_trigger.memory_size
   runtime       = var.pre_sign_up_trigger.runtime
   handler       = var.pre_sign_up_trigger.handler
+
+  architecture  = var.pre_sign_up_trigger.architecture
 
   environment = var.pre_sign_up_trigger.environment
 

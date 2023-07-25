@@ -24,6 +24,7 @@ variable "rpc" {
     source_bucket = optional(string)
     handler       = string
     runtime       = string
+    architecture  = optional(string)
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
@@ -45,6 +46,7 @@ variable "event_authorizer" {
     source_bucket = optional(string)
     handler       = string
     runtime       = string
+    architecture  = optional(string)
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))

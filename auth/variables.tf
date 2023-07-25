@@ -24,6 +24,7 @@ variable "post_authentication_trigger" {
     source_bucket = optional(string)
     handler       = string
     runtime       = string
+    architecture  = optional(string)
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
@@ -41,6 +42,7 @@ variable "post_confirmation_trigger" {
     source_bucket = optional(string)
     handler       = string
     runtime       = string
+    architecture  = optional(string)
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
@@ -58,6 +60,7 @@ variable "pre_authentication_trigger" {
     source_bucket = optional(string)
     handler       = string
     runtime       = string
+    architecture  = optional(string)
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))
@@ -75,6 +78,7 @@ variable "pre_sign_up_trigger" {
     source_bucket = optional(string)
     handler       = string
     runtime       = string
+    architecture  = optional(string)
     timeout       = number
     memory_size   = number
     environment   = optional(map(string))

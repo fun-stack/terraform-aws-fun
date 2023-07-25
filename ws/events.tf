@@ -51,7 +51,7 @@ resource "aws_sns_topic_subscription" "subscription_cleanup" {
 
 module "lambda_event_expander" {
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = "${local.prefix}-event-expander"
   log_retention_in_days = var.log_retention_in_days
@@ -71,7 +71,7 @@ module "lambda_event_expander" {
 
 module "lambda_event_sender" {
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = "${local.prefix}-event-sender"
   log_retention_in_days = var.log_retention_in_days
@@ -91,7 +91,7 @@ module "lambda_event_authorizer" {
   count = var.event_authorizer == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = "${local.prefix}-event-authorizer"
   log_retention_in_days = var.log_retention_in_days
@@ -102,6 +102,9 @@ module "lambda_event_authorizer" {
   memory_size   = var.event_authorizer.memory_size
   runtime       = var.event_authorizer.runtime
   handler       = var.event_authorizer.handler
+
+  architecture = var.event_authorizer.architecture
+
   environment = merge(var.event_authorizer.environment == null ? {} : var.event_authorizer.environment, {
     FUN_EVENTS_SNS_OUTPUT_TOPIC = aws_sns_topic.connection_events_authorized[0].id
   })
@@ -113,7 +116,7 @@ module "lambda_event_authorizer" {
 
 module "lambda_subscription_cleanup" {
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = "${local.prefix}-subscription-cleanup"
   log_retention_in_days = var.log_retention_in_days

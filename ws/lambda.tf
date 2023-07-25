@@ -2,7 +2,7 @@ module "lambda_rpc" {
   count = var.rpc == null ? 0 : 1
 
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = "${local.prefix}-rpc"
   log_retention_in_days = var.log_retention_in_days
@@ -13,6 +13,8 @@ module "lambda_rpc" {
   memory_size   = var.rpc.memory_size
   runtime       = var.rpc.runtime
   handler       = var.rpc.handler
+
+  architecture = var.rpc.architecture
 
   environment = merge(var.rpc.environment == null ? {} : var.rpc.environment, {
     FUN_EVENTS_SNS_OUTPUT_TOPIC = aws_sns_topic.subscription_events.id

@@ -1,6 +1,6 @@
 module "lambda" {
   source  = "cornerman/lambda/aws"
-  version = "0.1.4"
+  version = "0.1.5"
 
   name                  = local.prefix
   log_retention_in_days = var.log_retention_in_days

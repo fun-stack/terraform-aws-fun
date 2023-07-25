@@ -42,6 +42,7 @@ variable "auth" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
+      architecture  = optional(string)
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
@@ -57,6 +58,7 @@ variable "auth" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
+      architecture  = optional(string)
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
@@ -72,6 +74,7 @@ variable "auth" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
+      architecture  = optional(string)
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
@@ -87,6 +90,7 @@ variable "auth" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
+      architecture  = optional(string)
       timeout       = optional(number)
       memory_size   = number
       environment   = optional(map(string))
@@ -127,6 +131,7 @@ variable "http" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
+      architecture  = optional(string)
       timeout       = optional(number, 30)
       memory_size   = number
       environment   = optional(map(string))
@@ -142,6 +147,7 @@ variable "http" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
+      architecture  = optional(string)
       timeout       = optional(number, 30)
       memory_size   = number
       environment   = optional(map(string))
@@ -164,6 +170,7 @@ variable "ws" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
+      architecture  = optional(string)
       timeout       = optional(number, 30)
       memory_size   = number
       environment   = optional(map(string))
@@ -179,6 +186,7 @@ variable "ws" {
       source_bucket = optional(string)
       handler       = string
       runtime       = string
+      architecture  = optional(string)
       timeout       = optional(number, 5)
       memory_size   = number
       environment   = optional(map(string))
@@ -203,10 +211,10 @@ locals {
   domain_ws      = local.domain == null ? null : var.domain.enable_for_ws ? "ws.${local.domain}" : null
   domain_http    = local.domain == null ? null : var.domain.enable_for_http ? "api.${local.domain}" : null
 
-  url_website  = length(module.website) > 0 ? (local.domain_website == null ? module.website[0].url : "https://${local.domain_website}") : null
-  url_auth     = length(module.auth) > 0 ? (local.domain_auth == null ? module.auth[0].url : "https://${local.domain_auth}") : null
-  url_ws       = length(module.ws) > 0 ? (local.domain_ws == null ? module.ws[0].url : "wss://${local.domain_ws}") : null
-  url_http     = length(module.http) > 0 ? (local.domain_http == null ? module.http[0].url : "https://${local.domain_http}") : null
+  url_website = length(module.website) > 0 ? (local.domain_website == null ? module.website[0].url : "https://${local.domain_website}") : null
+  url_auth    = length(module.auth) > 0 ? (local.domain_auth == null ? module.auth[0].url : "https://${local.domain_auth}") : null
+  url_ws      = length(module.ws) > 0 ? (local.domain_ws == null ? module.ws[0].url : "wss://${local.domain_ws}") : null
+  url_http    = length(module.http) > 0 ? (local.domain_http == null ? module.http[0].url : "https://${local.domain_http}") : null
 
   auth_redirect_urls = compact(concat([local.url_website, local.url_http == null ? null : "${local.url_http}/oauth2-redirect.html"], flatten([var.auth == null ? null : var.auth.extra_redirect_urls])))
 
