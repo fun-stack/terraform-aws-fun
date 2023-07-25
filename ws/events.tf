@@ -62,6 +62,8 @@ module "lambda_event_expander" {
   runtime     = "nodejs18.x"
   handler     = "index.handler"
 
+  architecture = "arm64"
+
   environment = {
     DYNAMO_SUBSCRIPTIONS_TABLE = aws_dynamodb_table.websocket_subscriptions.id
     SNS_INPUT_TOPIC            = aws_sns_topic.subscription_events.id
@@ -81,6 +83,8 @@ module "lambda_event_sender" {
   memory_size = 128
   runtime     = "nodejs18.x"
   handler     = "index.handler"
+
+  architecture = "arm64"
 
   environment = {
     API_GATEWAY_ENDPOINT = replace(local.api_gateway_url, "wss://", "")
@@ -126,6 +130,8 @@ module "lambda_subscription_cleanup" {
   memory_size = 256
   runtime     = "nodejs18.x"
   handler     = "index.handler"
+
+  architecture = "arm64"
 
   environment = {
     DYNAMO_SUBSCRIPTIONS_TABLE = aws_dynamodb_table.websocket_subscriptions.id

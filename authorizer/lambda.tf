@@ -11,6 +11,8 @@ module "lambda" {
   runtime     = "nodejs18.x"
   handler     = "index.handler"
 
+  architecture = "arm64"
+
   environment = {
     COGNITO_POOL_ID       = var.cognito_user_pool_id
     COGNITO_API_SCOPES    = var.cognito_api_scopes
