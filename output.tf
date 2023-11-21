@@ -65,6 +65,7 @@ output "backend_environment_vars" {
     },
     length(module.auth) == 0 ? {} : {
       FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
+      FUN_AUTH_URL                  = module.auth[0].url
     }
   )
 }

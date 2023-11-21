@@ -15,6 +15,7 @@ module "ws" {
       var.ws.rpc.environment == null ? {} : var.ws.rpc.environment,
       length(module.auth) == 0 ? {} : {
         FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
+        FUN_AUTH_URL                  = module.auth[0].url
       }
     )
   })
@@ -24,6 +25,7 @@ module "ws" {
       var.ws.event_authorizer.environment == null ? {} : var.ws.event_authorizer.environment,
       length(module.auth) == 0 ? {} : {
         FUN_AUTH_COGNITO_USER_POOL_ID = module.auth[0].user_pool.id
+        FUN_AUTH_URL                  = module.auth[0].url
       }
     )
   })
